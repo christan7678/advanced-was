@@ -1,0 +1,156 @@
+.event-detail-page {
+    padding-bottom: 20px;
+}
+
+.detail-hero {
+    position: relative;
+    width: 100vw;
+    height: 340px;
+    margin-left: calc(-50vw + 50%);
+    overflow: hidden;
+}
+
+.detail-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.detail-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(11, 55, 112, 0.85), rgba(11, 55, 112, 0.3));
+}
+
+.detail-hero-content {
+    position: absolute;
+    bottom: 30px;
+    left: 60px;
+    color: #ffffff;
+}
+
+.detail-category {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.detail-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 10px 0;
+    color: #ffffff;
+}
+
+.detail-meta {
+    font-size: 14px;
+    opacity: 0.9;
+    color: #ffffff;
+}
+
+.detail-container {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.detail-left {
+    flex: 2;
+}
+
+.detail-section {
+    background: #ffffff;
+    border: 1px solid #e5eaf0;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+
+.detail-section h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #111827;
+}
+
+.detail-section p {
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.detail-info-list div {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #4b5563;
+}
+
+.detail-right {
+    flex: 1;
+}
+
+.detail-ticket-card {
+    background: #ffffff;
+    border: 1px solid #e5eaf0;
+    border-radius: 14px;
+    padding: 18px;
+    position: sticky;
+    top: 90px;
+}
+
+.detail-ticket-price {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #111827;
+}
+
+.detail-ticket-input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 14px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    outline: none;
+}
+
+.detail-btn-book {
+    width: 100%;
+    padding: 12px;
+    background: #0d6efd;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.detail-btn-book:hover {
+    background: #0b5ed7;
+}
+
+.detail-ticket-note {
+    font-size: 12px;
+    margin-top: 10px;
+    color: #6b7280;
+}
+
+@media (max-width: 991px) {
+    .detail-container {
+        flex-direction: column;
+    }
+
+    .detail-hero-content {
+        left: 20px;
+        right: 20px;
+    }
+
+    .detail-title {
+        font-size: 28px;
+    }
+}

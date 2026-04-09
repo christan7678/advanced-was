@@ -253,46 +253,44 @@
     margin-bottom: 34px;
 }
 
-.section-heading {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-weight: 700;
-    color: #4b5563;
-    margin-bottom: 14px;
+
+.artist-section {
+    margin-top: 10px;
 }
 
-.category-list {
+.artist-list {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    gap: 18px;
+    overflow-x: auto;
+    padding-bottom: 4px;
 }
 
-.category-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 9px 16px;
-    border-radius: 999px;
-    border: 1px solid #d6dde7;
-    background: #ffffff;
-    color: #374151;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+.artist-card {
+    min-width: 140px;
+    text-align: center;
+    cursor: pointer;
 }
 
-.category-pill:hover {
-    border-color: #b8c6d8;
+.artist-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 16px;
+    margin-bottom: 8px;
+}
+
+.artist-name {
+    font-size: 14px;
+    font-weight: 600;
     color: #111827;
 }
 
-.category-pill.active {
-    background: #0b3770;
-    border-color: #0b3770;
-    color: #ffffff;
+.artist-meta {
+    font-size: 12px;
+    color: #6b7280;
 }
+
+
 
 .section-header {
     display: flex;

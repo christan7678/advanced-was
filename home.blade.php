@@ -76,17 +76,41 @@
         </div>
     </section>
 
-    <section class="home-section">
-        <div class="section-heading">Browse by category</div>
+    <section class="home-section artist-section">
 
-        <div class="category-list">
-            <a href="{{ route('events.index') }}" class="category-pill active">All Events</a>
-            <a href="{{ route('events.index') }}" class="category-pill">Concerts</a>
-            <a href="{{ route('events.index') }}" class="category-pill">Conferences</a>
-            <a href="{{ route('events.index') }}" class="category-pill">Sports</a>
-            <a href="{{ route('events.index') }}" class="category-pill">Food & Drink</a>
-            <a href="{{ route('events.index') }}" class="category-pill">Exhibitions</a>
+        <div class="section-header">
+            <h2 class="section-title">Popular Artists</h2>
+            <a href="{{ route('events.index') }}" class="section-link">See all →</a>
         </div>
+
+        <div class="artist-list">
+
+            <div class="artist-card">
+                <img>Photo</img>
+                <div class="artist-name">Coldplay</div>
+                <div class="artist-meta">12 events</div>
+            </div>
+
+            <div class="artist-card">
+                <img>Photo</img>
+                <div class="artist-name">BTS</div>
+                <div class="artist-meta">8 events</div>
+            </div>
+
+            <div class="artist-card">
+                <img>Photo</img>               
+                <div class="artist-name">Apink</div>
+                <div class="artist-meta">6 events</div>
+            </div>
+
+            <div class="artist-card">
+                <img>Photo</img>
+                <div class="artist-name">Bruno Mars</div>
+                <div class="artist-meta">5 events</div>
+            </div>
+
+        </div>
+
     </section>
 
     <section class="home-section">

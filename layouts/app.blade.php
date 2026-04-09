@@ -6,15 +6,14 @@
     <title>Event Ticket Booking System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('css/nav.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/events.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/bookings.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/event-detail.css') }}">
-
-    <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/nav.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/profile.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/events.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/bookings.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/event-detail.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/footer.css') }}">
 
     @yield('styles')
 </head>

@@ -1,0 +1,214 @@
+.account-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+}
+
+.account-section {
+    background: linear-gradient(135deg, #f8fbff 0%, #fef8f6 100%);
+    border: 1px solid #e9eef5;
+    border-radius: 24px;
+    padding: 28px 28px 18px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.account-section-label {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7b8794;
+    margin-bottom: 22px;
+}
+
+.account-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.account-user {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.account-avatar {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0d6efd 0%, #5aa9ff 100%);
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.account-user-info h2 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.account-user-info p {
+    margin: 0;
+    font-size: 16px;
+    color: #6b7280;
+}
+
+.account-signout-btn {
+    min-width: 120px;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    background: #eef4ff;
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d8e6ff;
+}
+
+.account-signout-btn:hover {
+    background: #e2edff;
+    color: #0d6efd;
+}
+
+.account-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 6px;
+    text-decoration: none;
+    border-top: 1px solid #edf1f5;
+}
+
+.account-menu-item:first-child {
+    border-top: none;
+}
+
+.account-menu-item h3 {
+    margin: 0 0 6px;
+    font-size: 19px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.account-menu-item p {
+    margin: 0;
+    font-size: 15px;
+    color: #6b7280;
+}
+
+.account-arrow {
+    font-size: 36px;
+    line-height: 1;
+    color: #9aa4b2;
+    flex-shrink: 0;
+}
+
+.account-menu-item:hover h3 {
+    color: #0d6efd;
+}
+
+.account-menu-item:hover .account-arrow {
+    color: #0d6efd;
+}
+
+
+/* back button in all page */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #6b7280; 
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    margin-bottom: 40px;
+}
+
+.back-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.back-btn:active {
+    background: #eaf2ff;
+    color: #0d6efd;
+}
+
+.back-btn:focus {
+    outline: none;
+    color: #0d6efd;
+}
+
+@media (max-width: 991.98px) {
+    .account-section {
+        padding: 22px 18px 14px;
+        border-radius: 20px;
+    }
+
+    .account-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .account-user {
+        width: 100%;
+    }
+
+    .account-avatar {
+        width: 64px;
+        height: 64px;
+        font-size: 20px;
+    }
+
+    .account-user-info h2 {
+        font-size: 22px;
+    }
+
+    .account-user-info p {
+        font-size: 14px;
+    }
+
+    .account-signout-btn {
+        width: 100%;
+    }
+
+    .account-menu-item {
+        padding: 18px 2px;
+    }
+
+    .account-menu-item h3 {
+        font-size: 17px;
+    }
+
+    .account-menu-item p {
+        font-size: 14px;
+    }
+
+    .account-arrow {
+        font-size: 30px;
+    }
+}

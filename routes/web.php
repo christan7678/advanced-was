@@ -34,7 +34,7 @@ Route::view('/admin/login', 'admin.login')->name('admin.login');
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::redirect('/', '/admin/dashboard');
 
-    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::view('/events', 'admin.events.index')->name('events.index');
     Route::view('/events/category', 'admin.events.category')->name('events.category');
 

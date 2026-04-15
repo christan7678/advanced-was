@@ -87,12 +87,11 @@
                 <div class="sb-avatar">AD</div>
                 <div>
                     <div class="sb-user-name">Admin</div>
-                    <div class="sb-user-role">Super Admin</div>
                 </div>
             </div>
 
             <a href="{{ route('admin.login') }}" class="sb-logout" 
-                onclick="return confirm('Are you sure you want to sign out?')">>
+                onclick="return confirm('Are you sure you want to sign out?')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>

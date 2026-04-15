@@ -33,12 +33,8 @@ class CategoryController extends Controller
      * GET /categories/create
      */
     public function create()
-    {
-        if (Gate::allows('isAdmin')) {
-            
+    {     
         return view('categories.create');
-        }
-        return redirect()->route('categories.index')->with('error', 'You do not have permission to create categories.');
     }
 
     /**

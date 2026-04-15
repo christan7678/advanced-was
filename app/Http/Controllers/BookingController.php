@@ -73,7 +73,7 @@ class BookingController extends Controller
             'user_id' => auth('web')->id(),
             'event_id' => $event->id,
             'number_of_seats' => $request->number_of_seats,
-            'booking_status' => 'upcoming', // default status
+            'payment_status' => 'upcoming', // default status
         ]);
 
         // Decrease available seats
@@ -101,12 +101,12 @@ class BookingController extends Controller
         Gate::authorize('isAdmin');
 
         $request->validate([
-            'booking_status' => 'required|in:upcoming,completed,cancelled',
+            'payment_status' => 'required|in:upcoming,completed,cancelled',
         ]);
 
-        $oldStatus = $booking->booking_status;
-        $newStatus = $request->booking_status;
-        $booking->update(['booking_status' => $newStatus]);
+        $oldStatus = $booking->payment_status;
+        $newStatus = $request->payment_status;
+        $booking->update(['payment_status' => $newStatus]);
 
         if ($oldStatus !== 'cancelled' && $newStatus === 'cancelled') {
             // Restore seats if booking is cancelled
@@ -114,7 +114,7 @@ class BookingController extends Controller
         } elseif ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
             // Decrease seats if booking is reactivated
             if ($booking->number_of_seats > $booking->event->available_seats) {
-                return back()->withErrors(['booking_status' => 'Not enough available seats to reactivate this booking.']);
+                return back()->withErrors(['payment_status' => 'Not enough available seats to reactivate this booking.']);
             }
             $booking->event->decrement('available_seats', $booking->number_of_seats);
         }
@@ -133,7 +133,7 @@ class BookingController extends Controller
         }
 
         // Restore seats if booking was active
-        if ($booking->booking_status !== 'cancelled') {
+        if ($booking->payment_status !== 'cancelled') {
             $booking->event->increment('available_seats', $booking->number_of_seats);
         }
 

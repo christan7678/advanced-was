@@ -1,47 +1,43 @@
-@extends('layouts.app')
+@extends('admin.auth-layout')
 
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <h2 class="mb-4">Admin Login</h2>
+<div class="admin-auth-wrapper">
 
-                @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
+    <div class="admin-auth-card">
 
-                <form action="{{ route('admin.login') }}" method="POST">
-                    @csrf
-
-                    {{-- Email --}}
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" name="email" id="email"
-                            class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Password --}}
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" name="password" id="password" class="form-control" required>
-                    </div>
-
-                    {{-- Remember Me --}}
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" name="remember" id="remember" class="form-check-input">
-                        <label for="remember" class="form-check-label">Remember Me</label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-
-                    <div class="mt-3 text-center">
-                        <a href="{{ route('admin.register') }}">Don't have an account? Register</a>
-                    </div>
-                </form>
-            </div>
+        {{-- Header --}}
+        <div class="admin-auth-header">
+            <div class="admin-auth-icon">EB</div>
+            <h2>Admin Login</h2>
+            <p>Access admin dashboard</p>
         </div>
+
+        {{-- Form --}}
+        <form>
+
+            <div class="admin-auth-field">
+                <label>Email</label>
+                <input type="email" placeholder="admin@email.com">
+            </div>
+
+            <div class="admin-auth-field">
+                <label>Password</label>
+                <input type="password" placeholder="Enter password">
+            </div>
+
+            <button type="button" class="admin-btn-primary"
+                onclick="window.location.href='/admin/dashboard'">
+                Login
+            </button>
+
+        </form>
+
+        {{-- Back to user --}}
+        <div class="admin-auth-footer">
+            <a href="/login">← Back to User Login</a>
+        </div>
+
     </div>
+
+</div>
 @endsection

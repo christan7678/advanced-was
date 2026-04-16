@@ -1,0 +1,437 @@
+.section-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    color: #1f2937;
+}
+
+/* =========================================================
+   FILTER DROPDOWN
+   ========================================================= */
+.event-filter-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 24px;
+}
+
+.filter-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border: 1px solid #d6dde7;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-toggle-btn:hover {
+    border-color: #b8c6d8;
+    background: #f8fafc;
+}
+
+.events-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.events-topbar .section-title {
+    margin-bottom: 0;
+}
+
+.event-filter-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.event-filter-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    left: auto;
+    z-index: 200;
+    width: 420px;
+    max-width: min(420px, calc(100vw - 32px));
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+}
+
+.event-filter-dropdown.open {
+    display: block;
+}
+
+.event-filter-group + .event-filter-group {
+    margin-top: 16px;
+}
+
+.event-filter-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 10px;
+}
+
+.event-filter-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 16px;
+    border: 1px solid #d6dde7;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #374151;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    transition: all 0.2s ease;
+    white-space: normal;
+    text-align: center;
+    min-height: 40px;
+}
+
+.event-filter-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 16px;
+    border: 1px solid #d6dde7;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #374151;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+}
+
+.event-filter-tab:hover {
+    border-color: #b8c6d8;
+    color: #111827;
+}
+
+.event-filter-tab.active {
+    background: #0b3770;
+    border-color: #0b3770;
+    color: #ffffff;
+}
+
+/* =========================================================
+   ARTIST SECTION
+   ========================================================= */
+.event-artist-section {
+    margin-bottom: 32px;
+}
+
+.event-artist-header {
+    margin-bottom: 14px;
+}
+
+.event-artist-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.event-artist-list {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.event-artist-card {
+    min-width: 140px;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease;
+}
+
+.event-artist-card:hover {
+    transform: translateY(-2px);
+}
+
+.event-artist-card img {
+    width: 140px;
+    height: 140px;
+    display: block;
+    margin: 0 auto 10px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    border-radius: 16px;
+}
+
+.event-artist-card.active img {
+    border-color: #0d6efd;
+}
+
+.event-artist-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.event-artist-count {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* =========================================================
+   MONTH GROUP
+   ========================================================= */
+.month-group {
+    margin-bottom: 36px;
+}
+
+.month-label {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* =========================================================
+   EVENT GRID
+   ========================================================= */
+.event-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.event-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.event-row:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   LEFT SIDE
+   ========================================================= */
+.event-left {
+    flex-shrink: 0;
+    width: 52px;
+}
+
+.event-date {
+    width: 52px;
+    text-align: center;
+    color: #6c757d;
+}
+
+.event-date .day {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.event-date .number {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.event-date .month {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* =========================================================
+   IMAGE
+   ========================================================= */
+.event-image {
+    flex-shrink: 0;
+}
+
+.event-image img {
+    display: block;
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* =========================================================
+   DETAILS
+   ========================================================= */
+.event-details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.event-header {
+    margin-bottom: 10px;
+}
+
+.event-category {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #eef2f7;
+    color: #6b7280;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.event-title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.event-artist {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 6px;
+}
+
+.event-info {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 14px;
+}
+
+.event-footer {
+    margin-bottom: 12px;
+}
+
+.event-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.btn-buy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    padding: 7px 16px;
+    border: 1.5px solid #0d6efd;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-buy:hover {
+    background: #0d6efd;
+    color: #ffffff;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+.event-empty-state {
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #e5eaf0;
+    border-radius: 16px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 1199px) {
+    .event-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .section-title {
+        font-size: 22px;
+    }
+
+    .month-label {
+        font-size: 17px;
+    }
+
+    .event-filter-dropdown {
+        width: 300px;
+        max-width: calc(100vw - 24px);
+        padding: 14px;
+    }
+
+    .event-row {
+        gap: 12px;
+    }
+
+    .event-left {
+        width: 46px;
+    }
+
+    .event-date {
+        width: 46px;
+    }
+
+    .event-image img {
+        width: 85px;
+        height: 85px;
+    }
+
+    .event-title {
+        font-size: 16px;
+    }
+
+    .events-topbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+        
+    .event-filter-tabs {
+        gap: 8px;
+    }
+
+    .event-filter-tab {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+}

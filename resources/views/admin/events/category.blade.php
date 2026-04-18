@@ -1,233 +1,39 @@
 @extends('admin.layout')
 
-@section('title', 'Category Events')
-@section('page-title', 'Category Events')
+@section('title', $category->name . ' — Events')
+@section('page-title', $category->name)
 
 @section('topbar-actions')
-    <a href="{{ route('admin.events.index') }}" class="btn-outline-sm">← Back to categories</a>
-    <button type="button" class="btn-primary" onclick="openModal('event-modal')">+ Create event</button>
+    <a href="{{ route('admin.events.index') }}" class="btn-outline-sm">← All categories</a>
+    <a href="{{ route('admin.events.create', ['category_id' => $category->id]) }}" class="btn-primary">+ Create event</a>
 @endsection
 
 @section('content')
-@php
-    $category = request('category', 'concert');
+@if(session('success'))
+    <div class="alert alert-success" style="background:#d1fae5;color:#065f46;padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;">
+        {{ session('success') }}
+    </div>
+@endif
+@if(session('error'))
+    <div class="alert alert-error" style="background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;">
+        {{ session('error') }}
+    </div>
+@endif
 
-    $categoryData = [
-        'concert' => [
-            'name' => 'Concert',
-            'status' => 'Active',
-            'description' => 'Live performance, music show, festival, artist showcase.',
-            'events' => [
-                [
-                    'title' => 'Music Festival 2026',
-                    'organiser' => 'Coldplay',
-                    'date' => '20 May 2026',
-                    'venue' => 'Kuala Lumpur',
-                    'price' => '188 – 688',
-                    'tickets' => '320 / 500',
-                    'status' => 'published',
-                    'event_key' => 'music-festival-2026',
-                ],
-                [
-                    'title' => 'Summer Night Concert',
-                    'organiser' => 'Live Nation MY',
-                    'date' => '15 Jun 2026',
-                    'venue' => 'Shah Alam',
-                    'price' => '120 – 450',
-                    'tickets' => '280 / 400',
-                    'status' => 'published',
-                    'event_key' => 'summer-night-concert',
-                ],
-                [
-                    'title' => 'Acoustic Live Session',
-                    'organiser' => 'SoundLab',
-                    'date' => '01 Jul 2026',
-                    'venue' => 'Penang',
-                    'price' => '80 – 150',
-                    'tickets' => '90 / 150',
-                    'status' => 'draft',
-                    'event_key' => 'acoustic-live-session',
-                ],
-            ],
-        ],
-
-        'sports' => [
-            'name' => 'Sports',
-            'status' => 'Active',
-            'description' => 'Tournament, championship, match, sports challenge.',
-            'events' => [
-                [
-                    'title' => 'Basketball Championship 2026',
-                    'organiser' => 'Sports Hub',
-                    'date' => '05 Jul 2026',
-                    'venue' => 'Johor Bahru',
-                    'price' => '50 – 120',
-                    'tickets' => '850 / 1000',
-                    'status' => 'published',
-                    'event_key' => 'basketball-championship-2026',
-                ],
-                [
-                    'title' => 'Badminton Open 2026',
-                    'organiser' => 'MY Arena',
-                    'date' => '12 Jul 2026',
-                    'venue' => 'Kuala Lumpur',
-                    'price' => '40 – 100',
-                    'tickets' => '430 / 700',
-                    'status' => 'published',
-                    'event_key' => 'badminton-open-2026',
-                ],
-                [
-                    'title' => 'Football Finals 2026',
-                    'organiser' => 'National League',
-                    'date' => '22 Jul 2026',
-                    'venue' => 'Bukit Jalil',
-                    'price' => '60 – 200',
-                    'tickets' => '920 / 1200',
-                    'status' => 'draft',
-                    'event_key' => 'football-finals-2026',
-                ],
-            ],
-        ],
-
-        'workshop' => [
-            'name' => 'Workshop',
-            'status' => 'Draft',
-            'description' => 'Learning, training, practical class, hands-on session.',
-            'events' => [
-                [
-                    'title' => 'Startup Growth Workshop',
-                    'organiser' => 'TechOrg',
-                    'date' => '12 Jun 2026',
-                    'venue' => 'Penang',
-                    'price' => '80 – 150',
-                    'tickets' => '120 / 300',
-                    'status' => 'draft',
-                    'event_key' => 'startup-growth-workshop',
-                ],
-                [
-                    'title' => 'UX Design Bootcamp',
-                    'organiser' => 'Design Crew',
-                    'date' => '25 Jun 2026',
-                    'venue' => 'Cyberjaya',
-                    'price' => '120 – 220',
-                    'tickets' => '75 / 100',
-                    'status' => 'published',
-                    'event_key' => 'ux-design-bootcamp',
-                ],
-            ],
-        ],
-
-        'seminar' => [
-            'name' => 'Seminar',
-            'status' => 'Active',
-            'description' => 'Conference, talk, academic seminar, expert sharing.',
-            'events' => [
-                [
-                    'title' => 'Future Tech Seminar',
-                    'organiser' => 'UTAR Tech Council',
-                    'date' => '18 Jun 2026',
-                    'venue' => 'Sungai Long',
-                    'price' => '40 – 80',
-                    'tickets' => '240 / 400',
-                    'status' => 'published',
-                    'event_key' => 'future-tech-seminar',
-                ],
-                [
-                    'title' => 'AI Industry Talk',
-                    'organiser' => 'Open Knowledge Hub',
-                    'date' => '29 Jun 2026',
-                    'venue' => 'Kuala Lumpur',
-                    'price' => '30 – 50',
-                    'tickets' => '160 / 250',
-                    'status' => 'published',
-                    'event_key' => 'ai-industry-talk',
-                ],
-            ],
-        ],
-
-        'exhibition' => [
-            'name' => 'Exhibition',
-            'status' => 'Active',
-            'description' => 'Art gallery, expo, product showcase, display event.',
-            'events' => [
-                [
-                    'title' => 'Modern Art Expo 2026',
-                    'organiser' => 'Art Vision Group',
-                    'date' => '15 Jun 2026',
-                    'venue' => 'Penang Convention Centre',
-                    'price' => '120 – 240',
-                    'tickets' => '180 / 300',
-                    'status' => 'published',
-                    'event_key' => 'modern-art-expo-2026',
-                ],
-                [
-                    'title' => 'Innovation Showcase',
-                    'organiser' => 'Future Makers',
-                    'date' => '26 Jun 2026',
-                    'venue' => 'KLCC',
-                    'price' => '50 – 90',
-                    'tickets' => '210 / 280',
-                    'status' => 'draft',
-                    'event_key' => 'innovation-showcase',
-                ],
-            ],
-        ],
-
-        'community' => [
-            'name' => 'Community',
-            'status' => 'Draft',
-            'description' => 'Volunteer, gathering, neighbourhood and public engagement.',
-            'events' => [
-                [
-                    'title' => 'Neighbourhood Gathering',
-                    'organiser' => 'Community Club',
-                    'date' => '30 Jun 2026',
-                    'venue' => 'KL Community Hall',
-                    'price' => '50 – 80',
-                    'tickets' => '90 / 150',
-                    'status' => 'published',
-                    'event_key' => 'neighbourhood-gathering',
-                ],
-                [
-                    'title' => 'Volunteer Day 2026',
-                    'organiser' => 'Youth Connect',
-                    'date' => '08 Jul 2026',
-                    'venue' => 'Subang Jaya',
-                    'price' => 'Free',
-                    'tickets' => '65 / 120',
-                    'status' => 'draft',
-                    'event_key' => 'volunteer-day-2026',
-                ],
-            ],
-        ],
-    ];
-
-    $current = $categoryData[$category] ?? $categoryData['concert'];
-@endphp
-
-<div class="detail-card" style="margin-bottom:18px;">
-    <div class="detail-card-title">{{ $current['name'] }}</div>
+<div class="detail-card" style="margin-bottom:18px;" data-admin-events-base="{{ rtrim(url('/admin/events'), '/') }}">
+    <div class="detail-card-title">{{ $category->name }}</div>
 
     <div class="detail-two-col" style="grid-template-columns: 1fr 1fr; gap: 12px;">
         <div>
             <div class="detail-row">
-                <span class="detail-label">Category Name</span>
-                <span class="detail-val">{{ $current['name'] }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Status</span>
-                <span class="detail-val">{{ $current['status'] }}</span>
+                <span class="detail-label">Events</span>
+                <span class="detail-val">{{ $events->count() }}</span>
             </div>
         </div>
-
         <div>
             <div class="detail-row">
-                <span class="detail-label">Total Events</span>
-                <span class="detail-val">{{ count($current['events']) }}</span>
-            </div>
-            <div class="detail-row">
                 <span class="detail-label">Description</span>
-                <span class="detail-val">{{ $current['description'] }}</span>
+                <span class="detail-val">{{ $category->description ?? '—' }}</span>
             </div>
         </div>
     </div>
@@ -238,12 +44,9 @@
 
     <select id="eventStatusFilter" class="toolbar-select">
         <option value="">All status</option>
-        <option value="published">Published</option>
-        <option value="draft">Draft</option>
+        <option value="published">Upcoming</option>
+        <option value="draft">Ended</option>
     </select>
-
-    <button type="button" class="btn-outline-sm" onclick="filterCategoryEvents()">Filter</button>
-    <button type="button" class="btn-outline-sm" onclick="resetCategoryEvents()">Reset</button>
 </form>
 
 <div class="table-wrap">
@@ -254,41 +57,52 @@
                 <th>Date</th>
                 <th>Venue</th>
                 <th>Price (RM)</th>
-                <th>Tickets Sold</th>
+                <th>Tickets</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
 
         <tbody id="categoryEventsTable">
-            @foreach($current['events'] as $event)
-                <tr data-name="{{ strtolower($event['title']) }}"
-                    data-status="{{ strtolower($event['status']) }}">
+            @forelse($events as $event)
+                @php
+                    $rowStatus = \App\Http\Controllers\AdminEventController::eventRowStatus($event);
+                    $sold = max(0, (int) $event->total_seats - (int) $event->available_seats);
+                @endphp
+                <tr data-name="{{ strtolower($event->name) }}"
+                    data-status="{{ $rowStatus }}">
                     <td>
-                        <div class="td-title">{{ $event['title'] }}</div>
-                        <div class="td-sub">{{ $event['organiser'] }}</div>
+                        <div class="td-title">{{ $event->name }}</div>
+                        <div class="td-sub">{{ $event->organizer ?? '—' }}</div>
                     </td>
-                    <td>{{ $event['date'] }}</td>
-                    <td>{{ $event['venue'] }}</td>
-                    <td>{{ $event['price'] }}</td>
-                    <td>{{ $event['tickets'] }}</td>
                     <td>
-                        <span class="badge badge-{{ $event['status'] }}">
-                            {{ ucfirst($event['status']) }}
+                        {{ $event->date ? $event->date->format('d M Y') : '—' }}
+                        @if($event->time)
+                            <div class="td-sub">{{ substr($event->time, 0, 5) }}</div>
+                        @endif
+                    </td>
+                    <td>{{ $event->venue }}</td>
+                    <td>{{ number_format((float) $event->price, 2) }}</td>
+                    <td>{{ $sold }} / {{ $event->total_seats }}</td>
+                    <td>
+                        <span class="badge badge-{{ $rowStatus }}">
+                            {{ $rowStatus === 'published' ? 'Upcoming' : 'Ended' }}
                         </span>
                     </td>
                     <td>
                         <div class="action-group">
-                            <button type="button" class="act-btn" onclick="openModal('event-modal')">Edit</button>
-                            <a href="{{ route('admin.bookings.index', ['category' => $category, 'event' => $event['event_key']]) }}"
-                               class="act-btn act-view">
-                                View Purchases
-                            </a>
-                            <button type="button" class="act-btn act-del" onclick="openDeleteModal()">Delete</button>
+                            <a href="{{ route('admin.events.edit', $event) }}" class="act-btn">Edit</a>
+                            <a href="{{ route('admin.events.show', $event) }}" class="act-btn act-view">View</a>
+                            <a href="{{ route('admin.bookings.index') }}?event_id={{ $event->id }}" class="act-btn">Bookings</a>
+                            <button type="button" class="act-btn act-del" onclick="openEventDeleteModal({{ $event->id }}, @json($event->name))">Delete</button>
                         </div>
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="7" class="td-empty">No events in this category yet.</td>
+                </tr>
+            @endforelse
 
             <tr id="noCategoryEventsRow" style="display:none;">
                 <td colspan="7" class="td-empty">No matching events found.</td>
@@ -298,104 +112,9 @@
 </div>
 
 <div class="pagination-row">
-    <div class="page-info">Showing 1–{{ count($current['events']) }} of {{ count($current['events']) }} events</div>
-    <div class="page-btns">
-        <button class="page-btn" disabled>←</button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn" disabled>→</button>
-    </div>
+    <div class="page-info">Showing {{ $events->count() }} event(s)</div>
 </div>
 
-{{-- Create / Edit Event Modal --}}
-<div class="modal-backdrop" id="event-modal" style="display:none;">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">Create / Edit Event</div>
-            <button type="button" class="modal-close" onclick="closeModal('event-modal')">✕</button>
-        </div>
-
-        <form>
-            <div class="form-grid">
-                <div class="form-group form-full">
-                    <label>Event title</label>
-                    <input class="form-input" type="text" placeholder="Event title">
-                </div>
-
-                <div class="form-group form-full">
-                    <label>Artist / organiser</label>
-                    <input class="form-input" type="text" placeholder="Organiser name">
-                </div>
-
-                <div class="form-group">
-                    <label>Category</label>
-                    <select class="form-input">
-                        <option>Concert</option>
-                        <option>Sports</option>
-                        <option>Workshop</option>
-                        <option>Seminar</option>
-                        <option>Exhibition</option>
-                        <option>Community</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Venue / city</label>
-                    <input class="form-input" type="text" placeholder="Venue">
-                </div>
-
-                <div class="form-group">
-                    <label>Date</label>
-                    <input class="form-input" type="date">
-                </div>
-
-                <div class="form-group">
-                    <label>Time</label>
-                    <input class="form-input" type="time">
-                </div>
-
-                <div class="form-group">
-                    <label>Price from</label>
-                    <input class="form-input" type="number" placeholder="100">
-                </div>
-
-                <div class="form-group">
-                    <label>Price to</label>
-                    <input class="form-input" type="number" placeholder="500">
-                </div>
-
-                <div class="form-group">
-                    <label>Total tickets</label>
-                    <input class="form-input" type="number" placeholder="500">
-                </div>
-
-                <div class="form-group">
-                    <label>Status</label>
-                    <select class="form-input">
-                        <option>Draft</option>
-                        <option>Published</option>
-                    </select>
-                </div>
-
-                <div class="form-group form-full">
-                    <label>Description</label>
-                    <textarea class="form-input form-textarea" placeholder="Describe the event..."></textarea>
-                </div>
-
-                <div class="form-group form-full">
-                    <label>Event image</label>
-                    <input class="form-input" type="file">
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('event-modal')">Cancel</button>
-                <button type="button" class="btn-primary">Save event</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-{{-- Delete Modal --}}
 <div class="modal-backdrop" id="delete-modal" style="display:none;">
     <div class="modal modal-sm">
         <div class="modal-icon-danger">
@@ -406,60 +125,19 @@
             </svg>
         </div>
         <div class="modal-title text-center">Delete event?</div>
-        <div class="modal-sub text-center">This is UI only popup.</div>
+        <div class="modal-sub text-center" id="delete-modal-sub">This action cannot be undone.</div>
         <div class="modal-actions centered">
             <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <button type="button" class="btn-danger">Yes, delete</button>
+            <form id="delete-form" method="POST" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-danger">Yes, delete</button>
+            </form>
         </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
-<script>
-    function openModal(id) {
-        document.getElementById(id).style.display = 'flex';
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).style.display = 'none';
-    }
-
-    function openDeleteModal() {
-        document.getElementById('delete-modal').style.display = 'flex';
-    }
-
-    function filterCategoryEvents() {
-        const search = document.getElementById('eventSearch').value.toLowerCase().trim();
-        const status = document.getElementById('eventStatusFilter').value.toLowerCase();
-        const rows = document.querySelectorAll('#categoryEventsTable tr[data-name]');
-        let visibleCount = 0;
-
-        rows.forEach(row => {
-            const name = row.dataset.name.toLowerCase();
-            const rowStatus = row.dataset.status.toLowerCase();
-
-            const matchSearch = search === '' || name.includes(search);
-            const matchStatus = status === '' || rowStatus === status;
-
-            if (matchSearch && matchStatus) {
-                row.style.display = '';
-                visibleCount++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        document.getElementById('noCategoryEventsRow').style.display = visibleCount === 0 ? '' : 'none';
-    }
-
-    function resetCategoryEvents() {
-        document.getElementById('eventSearch').value = '';
-        document.getElementById('eventStatusFilter').value = '';
-        filterCategoryEvents();
-    }
-
-    document.getElementById('eventSearch').addEventListener('input', filterCategoryEvents);
-    document.getElementById('eventStatusFilter').addEventListener('change', filterCategoryEvents);
-</script>
+<script src="{{ asset('js/admin-events.js') }}"></script>
 @endsection

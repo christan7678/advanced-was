@@ -24,6 +24,10 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        if (Gate::allows('isAdmin')) {
+            $categories = Category::all();
+            return view('admin.categories.index', compact('categories'));
+        }
         $categories = Category::all();
         return view('categories.index', compact('categories'));
     }
@@ -33,8 +37,9 @@ class CategoryController extends Controller
      * GET /categories/create
      */
     public function create()
-    {     
-        return view('categories.create');
+    {
+        $categories = Category::all();
+        return view('admin.categories.index', compact('categories'));
     }
 
     /**
@@ -43,16 +48,21 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        if(Gate::allows('isAdmin')){
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-        ]);
+        if (Gate::allows('isAdmin')) {
+            $request->validate([
+                'name' => 'required|string|max:255|unique:categories,name',
+                'description' => 'nullable|string',
+                'color' => 'nullable|string|max:32',
+            ]);
 
-        Category::create($request->only('name'));
+            Category::create(array_merge(
+                $request->only(['name', 'description']),
+                ['color' => $request->input('color') ?: '#185FA5']
+            ));
 
-        return redirect()->route('categories.index')->with('success', 'Category created successfully!');
+            return redirect()->route('admin.categories.index')->with('success', 'Category created successfully!');
         }
-        return redirect()->route('categories.index')->with('error', 'You do not have permission to create categories.');
+        return redirect()->route('admin.categories.index')->with('error', 'You do not have permission to create categories.');
     }
 
     /**
@@ -61,8 +71,19 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        $category->load('events'); // Eager load events related to this category
+        $category->load('events');
+        if (Gate::allows('isAdmin')) {
+            return redirect()->route('admin.categories.edit', $category);
+        }
         return view('categories.show', compact('category'));
+    }
+
+    /**
+     * List events under a category (web route).
+     */
+    public function events(Category $category)
+    {
+        return $this->show($category);
     }
 
     /**
@@ -72,9 +93,9 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         if (Gate::allows('isAdmin')) {
-            return view('categories.edit', compact('category'));
+            return view('admin.categories.edit', compact('category'));
         }
-        return redirect()->route('categories.index')->with('error', 'You do not have permission.');
+        return redirect()->route('admin.categories.index')->with('error', 'You do not have permission.');
     }
 
     /**
@@ -83,16 +104,21 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        if(Gate::allows('isAdmin')){
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-        ]);
+        if (Gate::allows('isAdmin')) {
+            $request->validate([
+                'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+                'description' => 'nullable|string',
+                'color' => 'nullable|string|max:32',
+            ]);
 
-        $category->update($request->only('name'));
+            $category->update(array_merge(
+                $request->only(['name', 'description']),
+                ['color' => $request->input('color') ?: ($category->color ?: '#185FA5')]
+            ));
 
-        return redirect()->route('categories.index')->with('success', 'Category updated successfully!');
-    }
-        return redirect()->route('categories.index')->with('error', 'You do not have permission to update categories.');
+            return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully!');
+        }
+        return redirect()->route('admin.categories.index')->with('error', 'You do not have permission to update categories.');
     }
 
     /**
@@ -104,11 +130,11 @@ class CategoryController extends Controller
         if (Gate::allows('isAdmin')){
         // Prevent deletion if category has events linked to it
             if ($category->events()->count() > 0) {
-            return redirect()->route('categories.index')->with('error', 'Cannot delete category — it has events linked to it.');
+            return redirect()->route('admin.categories.index')->with('error', 'Cannot delete category — it has events linked to it.');
         }
             $category->delete();
-            return redirect()->route('categories.index')->with('success', 'Category deleted successfully!');
+            return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully!');
         }
-        return redirect()->route('categories.index')->with('error', 'You do not have permission to delete categories.');
+        return redirect()->route('admin.categories.index')->with('error', 'You do not have permission to delete categories.');
     }
 }

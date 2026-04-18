@@ -73,7 +73,7 @@ class BookingController extends Controller
             'user_id' => auth('web')->id(),
             'event_id' => $event->id,
             'number_of_seats' => $request->number_of_seats,
-            'payment_status' => 'upcoming', // default status
+            'payment_status' => 'pending', // default status
         ]);
 
         // Decrease available seats
@@ -101,7 +101,7 @@ class BookingController extends Controller
         Gate::authorize('isAdmin');
 
         $request->validate([
-            'payment_status' => 'required|in:upcoming,completed,cancelled',
+            'payment_status' => 'required|in:pending,completed,cancelled',
         ]);
 
         $oldStatus = $booking->payment_status;

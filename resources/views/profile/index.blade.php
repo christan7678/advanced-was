@@ -26,7 +26,7 @@
         </div>
 
         <div class="account-menu">
-            <a href="{{ route('profile.detail') }}" class="account-menu-item">
+            <a href="{{ route('profile.index') }}" class="account-menu-item">
                 <div>
                     <h3>Account</h3>
                     <p>Manage your account information</p>

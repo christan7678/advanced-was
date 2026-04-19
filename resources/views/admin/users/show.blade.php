@@ -1,4 +1,4 @@
-﻿@extends('admin.layout')
+@extends('admin.layout')
 
 @section('title', $user->name . ' — User Detail')
 @section('page-title', $user->name)

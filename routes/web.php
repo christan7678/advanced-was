@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\EventController;
-use App\Http\Controllers\AdminEventController;
-use App\Http\Controllers\AdminBookingController;
-use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminEventController;
+use App\Http\Controllers\Admin\AdminBookingController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\EventController;
 
 Route::resource('categories', CategoryController::class);
 //Route::resource('events', EventController::class);

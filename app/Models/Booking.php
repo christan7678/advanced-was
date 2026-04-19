@@ -11,7 +11,7 @@ class Booking extends Model
         'user_id',
         'event_id',
         'number_of_seats',
-        'booking_status',
+        'payment_status',
     ];
 
     public function user()
@@ -22,10 +22,5 @@ class Booking extends Model
     public function event()
     {
         return $this->belongsTo(Event::class);
-    }
-
-    public function promoCode()
-    {
-        return $this->belongsTo(PromoCode::class);
     }
 }

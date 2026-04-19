@@ -4,80 +4,99 @@
 @section('page-title', 'Categories')
 
 @section('content')
-<div class="cat-page-grid">
+<div class="cat-page-grid" data-admin-categories-base="{{ rtrim(url('/admin/categories'), '/') }}">
 
     <div class="detail-card" id="cat-form-card">
         <div class="detail-card-title" id="cat-form-heading">Add new category</div>
 
-        <form id="cat-form">
-            <div class="form-group">
-                <label>Category name</label>
-                <input class="form-input" type="text" id="cat-name" placeholder="e.g. Sports" required>
+        {{-- Flash Messages --}}
+        @if(session('success'))
+            <div class="alert alert-success" style="background:#d1fae5;color:#065f46;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:13px;">
+                {{ session('success') }}
             </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-error" style="background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:13px;">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        {{-- CREATE FORM --}}
+        <form id="cat-form" action="{{ route('admin.categories.store') }}" method="POST">
+            @csrf
+            <input type="hidden" id="form-method" name="_method" value="POST">
+            <input type="hidden" id="edit-id" name="edit_id" value="">
 
             <div class="form-group">
-                <label>Slug</label>
-                <input class="form-input" type="text" id="cat-slug" placeholder="e.g. sports">
+                <label>Category name</label>
+                <input class="form-input" type="text" id="cat-name" name="name"
+                       placeholder="e.g. Sports" required
+                       value="{{ old('name') }}">
+                @error('name')
+                    <div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="form-group">
                 <label>Description</label>
-                <textarea class="form-input form-textarea" id="cat-desc" placeholder="Short description..."></textarea>
+                <textarea class="form-input form-textarea" id="cat-desc" name="description"
+                          placeholder="Short description...">{{ old('description') }}</textarea>
             </div>
 
             <div class="form-group">
                 <label>Colour</label>
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <input class="form-input" type="text" id="cat-color-text" value="#185FA5" style="width:130px;">
-                    <input type="color" id="cat-color-picker" value="#185FA5"
+                    <input class="form-input" type="text" id="cat-color-text" name="color"
+                           value="{{ old('color', '#185FA5') }}" style="width:130px;">
+                    <input type="color" id="cat-color-picker" value="{{ old('color', '#185FA5') }}"
                            style="width:36px;height:36px;border-radius:6px;border:1px solid #d1d5db;padding:2px;cursor:pointer;background:#fff;">
                 </div>
             </div>
 
             <div style="display:flex; gap:8px; margin-top:6px;">
                 <button type="button" class="btn-cancel" onclick="resetCatForm()">Clear</button>
-                <button type="button" class="btn-primary">Save category</button>
+                <button type="submit" class="btn-primary" id="submit-btn">Save category</button>
             </div>
         </form>
     </div>
 
     <div>
         <div style="font-size:15px; font-weight:700; color:#111827; margin-bottom:14px;">
-            All categories <span style="font-weight:400; color:#9ca3af; font-size:13px;">(3)</span>
+            All categories
+            <span style="font-weight:400; color:#9ca3af; font-size:13px;">({{ $categories->count() }})</span>
         </div>
 
         <div class="cat-list">
+            @forelse($categories as $category)
             <div class="cat-row">
                 <div class="cat-row-left">
-                    <div class="cat-dot" style="background:#185FA5;"></div>
+                    <div class="cat-dot" style="background:{{ $category->color }};"></div>
                     <div>
-                        <div class="cat-name">Concert</div>
-                        <div class="td-sub">8 event(s)</div>
+                        <div class="cat-name">{{ $category->name }}</div>
+                        <div class="td-sub">{{ $category->events()->count() }} event(s)</div>
                     </div>
                 </div>
                 <div style="display:flex; gap:6px;">
-                    <button class="act-btn" onclick="editCategory('Concert', 'concert', 'Music events', '#185FA5')">Edit</button>
-                    <button class="act-btn act-del" onclick="openDeleteModal()">Delete</button>
-                </div>
-            </div>
+                    <a class="act-btn" href="{{ route('admin.categories.edit', $category) }}" style="text-decoration:none;">
+                        Edit
+                    </a>
 
-            <div class="cat-row">
-                <div class="cat-row-left">
-                    <div class="cat-dot" style="background:#059669;"></div>
-                    <div>
-                        <div class="cat-name">Workshop</div>
-                        <div class="td-sub">3 event(s)</div>
-                    </div>
-                </div>
-                <div style="display:flex; gap:6px;">
-                    <button class="act-btn" onclick="editCategory('Workshop', 'workshop', 'Learning events', '#059669')">Edit</button>
-                    <button class="act-btn act-del" onclick="openDeleteModal()">Delete</button>
+                    <button class="act-btn act-del"
+                        onclick="openDeleteModal({{ $category->id }}, '{{ addslashes($category->name) }}')">
+                        Delete
+                    </button>
                 </div>
             </div>
+            @empty
+            <div style="text-align:center;color:#9ca3af;padding:32px 0;font-size:14px;">
+                No categories yet. Add one above!
+            </div>
+            @endforelse
         </div>
     </div>
 </div>
 
+{{-- DELETE CONFIRM MODAL --}}
 <div class="modal-backdrop" id="delete-modal" style="display:none;">
     <div class="modal modal-sm">
         <div class="modal-icon-danger">
@@ -88,44 +107,19 @@
             </svg>
         </div>
         <div class="modal-title text-center">Delete category?</div>
-        <div class="modal-sub text-center">UI only popup.</div>
+        <div class="modal-sub text-center" id="delete-modal-sub">This action cannot be undone.</div>
         <div class="modal-actions centered">
             <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <button type="button" class="btn-danger">Yes, delete</button>
+            <form id="delete-form" method="POST" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-danger">Yes, delete</button>
+            </form>
         </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
-<script>
-const colorText = document.getElementById('cat-color-text');
-const colorPicker = document.getElementById('cat-color-picker');
-
-colorText.addEventListener('input', () => colorPicker.value = colorText.value);
-colorPicker.addEventListener('input', () => colorText.value = colorPicker.value);
-
-function editCategory(name, slug, description, color) {
-    document.getElementById('cat-form-heading').textContent = 'Edit category';
-    document.getElementById('cat-name').value = name;
-    document.getElementById('cat-slug').value = slug;
-    document.getElementById('cat-desc').value = description;
-    document.getElementById('cat-color-text').value = color;
-    document.getElementById('cat-color-picker').value = color;
-}
-
-function resetCatForm() {
-    document.getElementById('cat-form-heading').textContent = 'Add new category';
-    document.getElementById('cat-form').reset();
-    document.getElementById('cat-color-text').value = '#185FA5';
-    document.getElementById('cat-color-picker').value = '#185FA5';
-}
-
-function openDeleteModal() {
-    document.getElementById('delete-modal').style.display = 'flex';
-}
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-}
-</script>
+<script src="{{ asset('js/categories.js') }}"></script>
 @endsection

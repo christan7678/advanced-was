@@ -8,6 +8,9 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\AdminEventController;
+use App\Http\Controllers\AdminBookingController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\BookingController;
 
 Route::resource('categories', CategoryController::class);
@@ -21,34 +24,43 @@ Route::get('/myBookings', [BookingController::class, 'index'])->name('bookings.i
     Route::get('register', [AdminController::class, 'showRegisterForm'])->name('register');
     Route::post('register', [AdminController::class, 'register']);
 
-    //oute::get('login',  [AdminController::class, 'showLoginForm'])->name('login');
+    Route::get('login',  [AdminController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AdminController::class, 'login']);
 
-    Route::post('logout', [AdminController::class, 'logout'])->name('logout');
+    Route::get('logout', [AdminController::class, 'logout'])->name('logout');
 }); */
-
-
-
 
 /***** JING YIN EDIT FOR ADMIN!!!!!!!!!!!!! ***********/
 /***************** Admin ******************************/
-Route::view('/admin/login', 'admin.login')->name('admin.login');
+Route::get('/admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.post');
+Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::redirect('/', '/admin/dashboard');
 
-    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
-    Route::view('/events', 'admin.events.index')->name('events.index');
-    Route::view('/events/category', 'admin.events.category')->name('events.category');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/events', [AdminEventController::class, 'folderIndex'])->name('events.index');
+    Route::get('/events/category/{category}', [AdminEventController::class, 'categoryEvents'])->name('events.category');
+    Route::resource('events', AdminEventController::class)->except(['index']);
 
     
-    Route::view('/bookings', 'admin.bookings.index')->name('bookings.index');
-    Route::view('/bookings/show', 'admin.bookings.show')->name('bookings.show');
+    Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
+    Route::post('/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::delete('/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
     
-    Route::view('/users', 'admin.users.index')->name('users.index');
-    Route::view('/users/show', 'admin.users.show')->name('users.show');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/search', [AdminUserController::class, 'searchUsers'])->name('users.search');
+    Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+    Route::get('/users/{user}/bookings', [AdminUserController::class, 'getBookings'])->name('users.bookings');
+    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
     
-    Route::view('/categories', 'admin.categories.index')->name('categories.index');
+    Route::resource('categories', CategoryController::class);
 });
 
 Route::prefix('events')->group(function () {
@@ -141,11 +153,11 @@ Route::middleware('auth')->group(function () {
     })->name('profile.index');
 
     // Profile pages
-    Route::view('/detail', 'profile.detail')->name('profile.detail');
-    Route::view('/address', 'profile.address')->name('profile.address');
-    Route::view('/tickets', 'profile.tickets')->name('profile.tickets');
-    Route::view('/history', 'profile.history')->name('profile.history');
-    Route::view('/password', 'profile.password')->name('profile.password');
+    Route::view('/profile-detail', 'profile.detail');
+    Route::view('/address', 'profile.address');
+    Route::view('/my-bookings', 'profile.tickets');
+    Route::view('/purchase-history', 'profile.history');
+    Route::view('/change-password', 'profile.password');
 
     //Route::view('/admin/events/create', 'admin.events.create')->name('admin.events.create');
     //Route::view('/admin/bookings', 'admin.bookings.index')->name('admin.bookings.index');

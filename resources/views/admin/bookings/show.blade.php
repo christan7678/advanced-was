@@ -4,10 +4,11 @@
 @section('page-title', 'Booking Detail')
 
 @section('topbar-actions')
-    <a href="{{ route('admin.bookings.index') }}" class="btn-outline-sm">← Back to bookings</a>
+    <a href="{{ route('admin.bookings.index') }}" class="btn-outline-sm">← Back</a>
 @endsection
 
 @section('content')
+<div data-admin-bookings-base="{{ rtrim(url('/admin/bookings'), '/') }}" style="display:none;"></div>
 <div class="detail-two-col">
 
     <div style="display: flex; flex-direction: column; gap: 14px;">
@@ -16,27 +17,32 @@
 
             <div class="detail-row">
                 <span class="detail-label">Booking ID</span>
-                <span class="detail-val">#B001</span>
+                <span class="detail-val">#{{ $booking->id }}</span>
             </div>
 
             <div class="detail-row">
                 <span class="detail-label">Status</span>
-                <span class="badge badge-pending">Pending</span>
+                @php $statusVal = $booking->payment_status ?: 'pending'; @endphp
+                <span class="badge badge-{{ $statusVal }}">{{ ucfirst($statusVal) }}</span>
             </div>
 
             <div class="detail-row">
                 <span class="detail-label">Tickets</span>
-                <span class="detail-val">2</span>
+                <span class="detail-val">{{ $booking->number_of_seats }}</span>
             </div>
 
             <div class="detail-row">
                 <span class="detail-label">Total Paid</span>
-                <span class="detail-val">RM376</span>
+                @php
+                    $price = $booking->event ? (float) $booking->event->price : 0.0;
+                    $total = $price * (int) $booking->number_of_seats;
+                @endphp
+                <span class="detail-val">RM {{ number_format($total, 2) }}</span>
             </div>
 
             <div class="detail-row">
                 <span class="detail-label">Booked On</span>
-                <span class="detail-val">12 Apr 2026</span>
+                <span class="detail-val">{{ $booking->created_at ? $booking->created_at->format('d M Y') : '—' }}</span>
             </div>
         </div>
 
@@ -44,10 +50,15 @@
             <div class="detail-card-title">User</div>
 
             <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-                <div class="sb-avatar" style="width:40px;height:40px;font-size:14px;">AL</div>
+                @php
+                    $name = (string) ($booking->user->name ?? '—');
+                    $initials = strtoupper(substr($name, 0, 1) . substr($name, 1, 1));
+                    if (trim($initials) === '') $initials = 'US';
+                @endphp
+                <div class="sb-avatar" style="width:40px;height:40px;font-size:14px;">{{ $initials }}</div>
                 <div>
-                    <div class="td-title">Alice Tan</div>
-                    <div class="td-sub">alice@gmail.com</div>
+                    <div class="td-title">{{ $booking->user->name ?? '—' }}</div>
+                    <div class="td-sub">{{ $booking->user->email ?? '—' }}</div>
                 </div>
             </div>
 
@@ -63,27 +74,32 @@
 
             <div class="detail-row">
                 <span class="detail-label">Title</span>
-                <span class="detail-val">Music Festival 2026</span>
+                <span class="detail-val">{{ $booking->event->name ?? '—' }}</span>
             </div>
 
             <div class="detail-row">
                 <span class="detail-label">Artist</span>
-                <span class="detail-val">Coldplay</span>
+                <span class="detail-val">{{ $booking->event->organizer ?? '—' }}</span>
             </div>
 
             <div class="detail-row">
                 <span class="detail-label">Date</span>
-                <span class="detail-val">20 May 2026</span>
+                <span class="detail-val">
+                    {{ $booking->event && $booking->event->date ? $booking->event->date->format('d M Y') : '—' }}
+                    @if($booking->event && $booking->event->time)
+                        · {{ substr($booking->event->time, 0, 5) }}
+                    @endif
+                </span>
             </div>
 
             <div class="detail-row">
                 <span class="detail-label">Venue</span>
-                <span class="detail-val">Kuala Lumpur</span>
+                <span class="detail-val">{{ $booking->event->venue ?? '—' }}</span>
             </div>
 
             <div class="detail-row">
                 <span class="detail-label">Category</span>
-                <span class="detail-val">Concert</span>
+                <span class="detail-val">{{ $booking->event && $booking->event->category ? $booking->event->category->name : '—' }}</span>
             </div>
         </div>
 
@@ -94,8 +110,10 @@
             </p>
 
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button type="button" class="btn-warning" onclick="openCancelModal()">Cancel Booking</button>
-                <button type="button" class="btn-danger" onclick="openDeleteModal()">Delete Booking</button>
+                @if(($booking->payment_status ?: 'pending') !== 'cancelled')
+                    <button type="button" class="btn-warning" onclick="openCancelModal({{ $booking->id }}, @json($booking->user->name ?? ''))">Cancel Booking</button>
+                @endif
+                <button type="button" class="btn-danger" onclick="openDeleteModal({{ $booking->id }}, @json($booking->user->name ?? ''))">Delete Booking</button>
             </div>
         </div>
     </div>
@@ -112,10 +130,13 @@
             </svg>
         </div>
         <div class="modal-title text-center">Cancel this booking?</div>
-        <div class="modal-sub text-center">This is UI only popup.</div>
+        <div class="modal-sub text-center" id="cancel-modal-sub">This action cannot be undone.</div>
         <div class="modal-actions centered">
             <button type="button" class="btn-cancel" onclick="closeModal('cancel-modal')">Go back</button>
-            <button type="button" class="btn-warning">Yes, cancel it</button>
+            <form id="cancel-form" method="POST" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn-warning">Yes, cancel it</button>
+            </form>
         </div>
     </div>
 </div>
@@ -130,27 +151,19 @@
             </svg>
         </div>
         <div class="modal-title text-center">Delete booking?</div>
-        <div class="modal-sub text-center">This is UI only popup.</div>
+        <div class="modal-sub text-center" id="delete-modal-sub">This action cannot be undone.</div>
         <div class="modal-actions centered">
             <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <button type="button" class="btn-danger">Yes, delete</button>
+            <form id="delete-form" method="POST" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-danger">Yes, delete</button>
+            </form>
         </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
-<script>
-    function openCancelModal() {
-        document.getElementById('cancel-modal').style.display = 'flex';
-    }
-
-    function openDeleteModal() {
-        document.getElementById('delete-modal').style.display = 'flex';
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).style.display = 'none';
-    }
-</script>
+<script src="{{ asset('js/admin-bookings.js') }}"></script>
 @endsection

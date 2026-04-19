@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin – @yield('title', 'EventBook')</title>
 
     <link rel="stylesheet" href="{{ asset('css/admin/admin-auth.css') }}">    
@@ -90,15 +91,18 @@
                 </div>
             </div>
 
-            <a href="{{ route('admin.login') }}" class="sb-logout" 
-                onclick="return confirm('Are you sure you want to sign out?')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-                Sign Out
-            </a>
+            <form method="POST" action="{{ route('admin.logout') }}"
+                  onsubmit="return confirm('Are you sure you want to sign out?')">
+                @csrf
+                <button type="submit" class="sb-logout" style="background:none;border:0;padding:0;cursor:pointer;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Sign Out
+                </button>
+            </form>
         </div>
 
     </aside>

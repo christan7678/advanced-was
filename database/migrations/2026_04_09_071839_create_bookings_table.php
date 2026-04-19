@@ -18,7 +18,7 @@ class CreateBookingsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('event_id');
             $table->integer('number_of_seats');
-            $table->enum('booking_status', ['upcoming','completed','cancelled'])->default('upcoming');
+            $table->enum('payment_status', ['pending','completed','cancelled'])->default('pending');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

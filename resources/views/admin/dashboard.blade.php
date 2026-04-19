@@ -8,7 +8,7 @@
 @endpush
 
 @section('topbar-actions')
-    <span class="topbar-date">Mon, 14 Apr 2026</span>
+    <span class="topbar-date" id="admin-dashboard-live-datetime" title="Local date & time"></span>
 @endsection
 
 @section('content')
@@ -204,4 +204,8 @@
         </div>
     </div>
 
+@endsection
+
+@section('scripts')
+<script src="{{ asset('js/admin-dashboard.js') }}"></script>
 @endsection

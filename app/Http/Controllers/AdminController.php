@@ -56,7 +56,7 @@ class AdminController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('admin')->attempt($credentials, $request->remember)) {
-            return redirect()->route('home')->with('success', 'Logged in successfully!');
+            return redirect()->route('admin.dashboard')->with('success', 'Logged in successfully!');
         }
 
         return back()->withErrors([

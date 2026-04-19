@@ -70,6 +70,25 @@
     text-decoration: none;
 }
 
+/* Admin Login Link */
+.auth-switch {
+    margin: 18px 0 6px;
+    text-align: center;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.auth-admin-link {
+    margin-left: 6px;
+    color: #185FA5;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-admin-link:hover {
+    text-decoration: underline;
+}
+
 /* Divider */
 .auth-divider {
     display: flex;

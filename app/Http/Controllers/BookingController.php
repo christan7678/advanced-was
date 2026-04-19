@@ -47,6 +47,22 @@ class BookingController extends Controller
         return view('bookings.show', compact('booking'));
     }
 
+    public function create(Request $request)
+    {
+        if (!auth('web')->check()) {
+            return redirect()->route('login')->with('error', 'Please login to make a booking.');
+        }
+
+        $eventId = $request->query('event_id');
+        $event = null;
+
+        if ($eventId) {
+            $event = Event::findOrFail($eventId);
+        }
+
+        return view('bookings.create', compact('event'));
+    }
+
     /**
      * Store a new booking (user only)
      */
@@ -59,6 +75,7 @@ class BookingController extends Controller
         $request->validate([
             'event_id' => 'required|exists:events,id',
             'number_of_seats' => 'required|integer|min:1',
+            'total_amount' => 'required|numeric|min:0',
         ]);
 
         $event = Event::findOrFail($request->event_id);
@@ -68,11 +85,24 @@ class BookingController extends Controller
             return back()->withErrors(['number_of_seats' => 'Not enough available seats.']);
         }
 
-        // Create booking
+        // Validate total_amount (anti-tampering check)
+        $expectedTotal = $event->price * $request->number_of_seats;
+        $submittedTotal = (float) $request->total_amount;
+        
+        if (abs($expectedTotal - $submittedTotal) > 0.01) {
+            return back()->withErrors(['total_amount' => 'Invalid total amount. Please try again.']);
+        }
+
+        // Generate unique booking code
+        $bookingCode = 'BK' . strtoupper(uniqid());
+
+        // Create booking with submitted total_amount
         Booking::create([
+            'booking_code' => $bookingCode,
             'user_id' => auth('web')->id(),
             'event_id' => $event->id,
             'number_of_seats' => $request->number_of_seats,
+            'total_amount' => $submittedTotal,
             'payment_status' => 'pending', // default status
         ]);
 
@@ -80,7 +110,7 @@ class BookingController extends Controller
         $event->decrement('available_seats', $request->number_of_seats);
 
         return redirect()->route('bookings.index')
-            ->with('success', 'Booking confirmed!');
+            ->with('success', 'Booking confirmed! Your booking code is ' . $bookingCode);
     }
 
     /**

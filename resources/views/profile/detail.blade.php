@@ -18,9 +18,15 @@
 
             <h2>Account Information</h2>
 
-            <p>Name: Wad Lavender Lo</p>
-            <p>Email: wad2602@example.com</p>
-            <p>Phone: +60 12-345 6789</p>
+            <div style="display:flex; align-items:center; gap:14px; margin:14px 0;">
+                <div class="account-avatar">
+                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                </div>
+                <div>
+                    <div style="font-size:18px; font-weight:700; color:#111827;">{{ Auth::user()->name ?? 'User Name' }}</div>
+                    <div style="font-size:14px; color:#6b7280;">{{ Auth::user()->email ?? 'Email' }}</div>
+                </div>
+            </div>
 
             </div>
         </div>

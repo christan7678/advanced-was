@@ -20,7 +20,7 @@
             </tr>
             <tr>
                 <th>Date</th>
-                <td>{{ $booking->event->date }} {{ $booking->event->time }}</td>
+                <td>{{ $booking->event->date->format('Y-m-d') }} {{ $booking->event->time }}</td>
             </tr>
             <tr>
                 <th>Venue</th>

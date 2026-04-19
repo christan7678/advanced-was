@@ -16,4 +16,19 @@ class Ticket extends Model
         'ticket_code',
         'qr_code_path',
     ];
+
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+      public function bookings()
+    {
+        return $this->belongsTo(Booking::class);
+    }
 }

@@ -114,15 +114,13 @@
                     $event = $booking->event;
                     $user = $booking->user;
                     $statusVal = $booking->payment_status ?: 'pending';
-                    $price = $event ? (float) $event->price : 0.0;
-                    $total = $price * (int) $booking->number_of_seats;
                 @endphp
                 <tr>
                     <td>#{{ $booking->id }}</td>
                     <td><div class="td-title">{{ $user->name ?? '—' }}</div></td>
                     <td class="td-sub">{{ $user->email ?? '—' }}</td>
                     <td>{{ $booking->number_of_seats }}</td>
-                    <td>RM {{ number_format($total, 2) }}</td>
+                    <td>RM {{ number_format($booking->total_amount ?? 0, 2) }}</td>
                     <td>{{ $booking->created_at ? $booking->created_at->format('d M Y') : '—' }}</td>
                     <td>
                         <span class="badge badge-{{ $statusVal }}">{{ ucfirst($statusVal) }}</span>

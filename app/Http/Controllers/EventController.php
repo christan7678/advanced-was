@@ -10,7 +10,7 @@ class EventController extends Controller
 {
     public function __construct()
     {
-        // index + show: admin and user
+        // index + show: both admin and user (authenticated)
         $this->middleware('auth:admin,web')->only(['index', 'show']);
 
         // CRUD: admin only
@@ -19,8 +19,51 @@ class EventController extends Controller
 
     public function index()
     {
-        $events = Event::with('category')->latest()->get();
-        return view('events.index', compact('events'));
+        $category = request('category');
+        $artist = request('artist');
+        $searchQuery = request('q');
+
+        $query = Event::with('category')
+            ->where('status', '!=', 'sold_out')
+            ->orderBy('date', 'asc');
+
+        // Filter by category
+        if ($category) {
+            $query->whereHas('category', function ($q) use ($category) {
+                $q->where('name', $category);
+            });
+        }
+
+        // Filter by artist
+        if ($artist) {
+            $query->where('artist', 'like', '%' . $artist . '%');
+        }
+
+        // Search by name
+        if ($searchQuery) {
+            $query->where(function ($q) use ($searchQuery) {
+                $q->where('name', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('artist', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('description', 'like', '%' . $searchQuery . '%');
+            });
+        }
+
+        $events = $query->get();
+
+        // Group events by month
+        $groupedEvents = $events->groupBy(function ($event) {
+            return $event->date->format('F Y');
+        });
+
+        // Get available categories and artists
+        $categories = Category::withCount('events')->get();
+        $artists = Event::where('artist', '!=', null)
+            ->distinct('artist')
+            ->pluck('artist')
+            ->filter()
+            ->values();
+
+        return view('events.index', compact('groupedEvents', 'categories', 'artists', 'category', 'artist', 'searchQuery'));
     }
 
     public function create()

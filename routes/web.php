@@ -12,23 +12,12 @@ use App\Http\Controllers\Admin\AdminBookingController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
 
 Route::resource('categories', CategoryController::class);
-//Route::resource('events', EventController::class);
 Route::get('/categories/{category}/events', [CategoryController::class, 'events'])->name('categories.events');
-Route::resource('bookings', BookingController::class)->except(['create']);
-Route::get('/myBookings', [BookingController::class, 'index'])->name('bookings.index');
 
-// Admin Auth routes
-/*Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('register', [AdminController::class, 'showRegisterForm'])->name('register');
-    Route::post('register', [AdminController::class, 'register']);
-
-    Route::get('login',  [AdminController::class, 'showLoginForm'])->name('login');
-    Route::post('login', [AdminController::class, 'login']);
-
-    Route::get('logout', [AdminController::class, 'logout'])->name('logout');
-}); */
 
 /***** JING YIN EDIT FOR ADMIN!!!!!!!!!!!!! ***********/
 /***************** Admin ******************************/
@@ -63,47 +52,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', CategoryController::class);
 });
 
-Route::prefix('events')->group(function () {
-    Route::view('/events', 'events.index')->name('events.index');
-    Route::view('/events/show', 'events.show')->name('events.show');
+Route::middleware('auth:admin,web')->group(function () {
+    // Events (both admin and user can view)
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+
+    // Admin-only event management
+    Route::middleware('auth:admin')->group(function () {
+        Route::get('/admin/events/create', [EventController::class, 'create'])->name('events.create');
+        Route::post('/events', [EventController::class, 'store'])->name('events.store');
+        Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
+        Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+        Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    });
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-Route::get('/', function () {
-    return view('home');
-})->name('home');
-
-
-
-
-
-
-/*** me edit part */
+Route::redirect('/', '/home');
+Route::get('/home', [HomeController::class,'index'])->name('home');
 
 // 暂时的， 后续会改成controller的方式
 Route::view('/forgotPassword', 'auth.forgotPassword')->name('password.request');
 
-Route::get('/auth/google', function () {
-    return 'Google login page';
-})->name('auth.google');
+Route::get('/auth/google', function () {return 'Google login page';})->name('auth.google');
 
-
-/**Route::prefix('events')->group(function () {
-    Route::view('/events', 'events.index')->name('events.index');
-    Route::view('/events/show', 'events.show')->name('events.show');
-});
-*/
 
 Route::prefix('pages')->group(function () {
     // Info pages
@@ -115,9 +87,6 @@ Route::prefix('pages')->group(function () {
     Route::view('/refund', 'pages.refund')->name('pages.refund');
 });
 
-
-
-
 // Authentication Routes
 // guest middleware ensures only unauthenticated users can access login/register pages
 Route::middleware('guest')->group(function () {
@@ -128,39 +97,27 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
 });
 
-
-
-
-
-
 Route::middleware('auth')->group(function () {
 
     // if want use button need change to post method
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     //booking routes
-    // function used for testing only, later will be changed to controller method
-    Route::get('/bookings/create', function () {
-        return view('bookings.create');
-    })->name('bookings.create');
-
-
+    Route::get('/myBookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+    Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
 
     // funtion can be added inside controller later
-    Route::get('/profile', function (Request $request) {
-        $lastVisit = $request->cookie('last_visit');
-        return view('profile.index', compact('lastVisit'));
-    })->name('profile.index');
+    Route::get('/profile', [UserController::class, 'index'])->name('profile.index');
 
     // Profile pages
-    Route::view('/profile-detail', 'profile.detail');
-    Route::view('/address', 'profile.address');
-    Route::view('/my-bookings', 'profile.tickets');
-    Route::view('/purchase-history', 'profile.history');
-    Route::view('/change-password', 'profile.password');
-
-    //Route::view('/admin/events/create', 'admin.events.create')->name('admin.events.create');
-    //Route::view('/admin/bookings', 'admin.bookings.index')->name('admin.bookings.index');
+    Route::get('/profile-detail', [UserController::class, 'showDetail'])->name('profile.detail');
+    Route::get('/profile/my-bookings', [UserController::class, 'tickets'])->name('profile.tickets');
+    Route::get('/profile/purchase-history', [UserController::class, 'history'])->name('profile.history');
+    Route::get('/profile/change-password', [UserController::class, 'password'])->name('profile.password');
+    Route::post('/profile/change-password', [UserController::class, 'updatePassword']);
 
 });
 
@@ -172,9 +129,3 @@ Route::get('/test-user', function () {
 Route::get('/test-admin', function () {
     return auth('admin')->check() ? 'Admin已登录' : 'Admin未登录';
 });
-
-
-
-/*** end of me edit part */
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

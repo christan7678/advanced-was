@@ -13,7 +13,6 @@
                 </div>
                 <div class="account-user-info">
                     <h2>{{ Auth::user()->name ?? 'User Name' }}</h2>
-                    <p>{{ Auth::user()->email ?? 'user@example.com' }}</p>
                 </div>
             </div>
 
@@ -30,14 +29,6 @@
                 <div>
                     <h3>Account</h3>
                     <p>Manage your account information</p>
-                </div>
-                <span class="account-arrow">›</span>
-            </a>
-
-            <a href="{{ route('profile.address') }}" class="account-menu-item">
-                <div>
-                    <h3>Address</h3>
-                    <p>Modify your contact and shipping address</p>
                 </div>
                 <span class="account-arrow">›</span>
             </a>

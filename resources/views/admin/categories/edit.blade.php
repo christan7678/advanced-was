@@ -33,12 +33,6 @@
         </div>
 
         <div class="form-group">
-            <label>Description</label>
-            <textarea class="form-input form-textarea" name="description"
-                      placeholder="Short description...">{{ old('description', $category->description ?? '') }}</textarea>
-        </div>
-
-        <div class="form-group">
             <label>Colour</label>
             <div style="display:flex; align-items:center; gap:10px;">
                 <input class="form-input" type="text" id="cat-color-text" name="color"

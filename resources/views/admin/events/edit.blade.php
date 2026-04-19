@@ -42,6 +42,8 @@
             'categoryRequired' => true,
             'defaultDate' => null,
             'defaultTime' => null,
+            'isAdmin' => true,
+            'statuses' => $statuses ?? ['active', 'inactive', 'sold_out', 'cancelled'],
             'cancelUrl' => $event->category_id ? route('admin.events.category', $event->category_id) : route('admin.events.index'),
         ])
     </form>

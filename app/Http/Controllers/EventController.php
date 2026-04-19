@@ -37,6 +37,7 @@ class EventController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'artist' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'date' => 'required|date',
             'time' => 'required',
@@ -82,6 +83,7 @@ class EventController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'artist' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'date' => 'required|date',
             'time' => 'required',

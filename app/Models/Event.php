@@ -12,6 +12,7 @@ class Event extends Model
 
     protected $fillable = [
         'name',
+        'artist',
         'description',
         'date',
         'time',
@@ -19,10 +20,20 @@ class Event extends Model
         'price',
         'total_seats',
         'available_seats',
+        'status',
         'category_id',
         'image',
         'organizer',
     ];
+
+    protected static function booted()
+    {
+        static::saving(function ($event) {
+            if ($event->available_seats == 0) {
+                $event->status = 'sold_out';
+            }
+        });
+    }
 
     public function bookings()
     {

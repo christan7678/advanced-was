@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     // Allow mass assignment for these fields
-    protected $fillable = ['name', 'description', 'color'];
+    protected $fillable = ['name', 'color'];
 
     // A category can have many events
     public function events() {

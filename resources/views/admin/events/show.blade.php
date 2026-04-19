@@ -20,6 +20,10 @@
         <span class="detail-val">{{ $event->category->name ?? '—' }}</span>
     </div>
     <div class="detail-row">
+        <span class="detail-label">Artist</span>
+        <span class="detail-val">{{ $event->artist ?? '—' }}</span>
+    </div>
+    <div class="detail-row">
         <span class="detail-label">Organiser</span>
         <span class="detail-val">{{ $event->organizer ?? '—' }}</span>
     </div>
@@ -43,6 +47,12 @@
     <div class="detail-row">
         <span class="detail-label">Seats</span>
         <span class="detail-val">{{ $event->total_seats - $event->available_seats }} sold · {{ $event->available_seats }} left · {{ $event->total_seats }} total</span>
+    </div>
+    <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="detail-val">
+            <span class="detail-val">{{ ucfirst($event->status) }}</span>
+        </span>
     </div>
     @if($event->description)
         <div style="margin-top:12px;font-size:14px;color:#374151;line-height:1.5;">{{ $event->description }}</div>

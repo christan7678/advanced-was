@@ -137,6 +137,7 @@ class AdminEventController extends Controller
     {
         $rules = [
             'name' => 'required|string|max:255',
+            'artist' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'date' => 'required|date',
             'time' => 'required',
@@ -159,6 +160,7 @@ class AdminEventController extends Controller
 
         $data = $request->only([
             'name',
+            'artist',
             'description',
             'date',
             'time',

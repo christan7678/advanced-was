@@ -47,7 +47,6 @@
             </div>
             <div class="folder-title">{{ $category->name }}</div>
             <div class="folder-meta">{{ $category->events_count }} event(s)</div>
-            <div class="folder-sub">{{ \Illuminate\Support\Str::limit($category->description ?? '—', 80) }}</div>
         </a>
     @empty
         <div class="td-empty" style="grid-column:1/-1;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:32px;text-align:center;">

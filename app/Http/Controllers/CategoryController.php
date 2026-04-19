@@ -51,12 +51,11 @@ class CategoryController extends Controller
         if (Gate::allows('isAdmin')) {
             $request->validate([
                 'name' => 'required|string|max:255|unique:categories,name',
-                'description' => 'nullable|string',
                 'color' => 'nullable|string|max:32',
             ]);
 
             Category::create(array_merge(
-                $request->only(['name', 'description']),
+                $request->only(['name']),
                 ['color' => $request->input('color') ?: '#185FA5']
             ));
 
@@ -107,12 +106,11 @@ class CategoryController extends Controller
         if (Gate::allows('isAdmin')) {
             $request->validate([
                 'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-                'description' => 'nullable|string',
                 'color' => 'nullable|string|max:32',
             ]);
 
             $category->update(array_merge(
-                $request->only(['name', 'description']),
+                $request->only(['name']),
                 ['color' => $request->input('color') ?: ($category->color ?: '#185FA5')]
             ));
 

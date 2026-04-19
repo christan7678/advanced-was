@@ -36,6 +36,15 @@
     </div>
 
     <div class="form-group form-full">
+        <label>Artist</label>
+        <input class="form-input" type="text" name="artist"
+               value="{{ old('artist', $e ? ($e->artist ?? '') : '') }}" placeholder="Artist or band name">
+        @error('artist')
+            <div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="form-group form-full">
         <label>Organiser</label>
         <input class="form-input" type="text" name="organizer"
                value="{{ old('organizer', $e ? ($e->organizer ?? '') : '') }}" placeholder="Artist or organiser name">
@@ -112,6 +121,22 @@
             <div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ $message }}</div>
         @enderror
     </div>
+
+    @if($isAdmin ?? false)
+    <div class="form-group">
+        <label>Status</label>
+        <select class="form-input" name="status">
+            @foreach($statuses ?? ['active', 'inactive', 'sold_out', 'cancelled'] as $status)
+                <option value="{{ $status }}" {{ old('status', $e?->status ?? 'inactive') === $status ? 'selected' : '' }}>
+                    {{ ucfirst(str_replace('_', ' ', $status)) }}
+                </option>
+            @endforeach
+        </select>
+        @error('status')
+            <div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ $message }}</div>
+        @enderror
+    </div>
+    @endif
 
     @if($isCreate)
         <div class="form-group form-full">

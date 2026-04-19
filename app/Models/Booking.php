@@ -8,8 +8,10 @@ class Booking extends Model
 {
     //
     protected $fillable = [
+        'booking_code',
         'user_id',
         'event_id',
+        'total_amount',
         'number_of_seats',
         'payment_status',
     ];

@@ -45,6 +45,8 @@
             'categoryRequired' => true,
             'defaultDate' => $defaultDate,
             'defaultTime' => $defaultTime,
+            'isAdmin' => true,
+            'statuses' => $statuses ?? ['active', 'inactive', 'sold_out', 'cancelled'],
             'cancelUrl' => $prefillCategory ? route('admin.events.category', $prefillCategory) : route('admin.events.index'),
         ])
     </form>

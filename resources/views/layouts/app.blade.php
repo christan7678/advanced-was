@@ -87,7 +87,7 @@
             });
         })();
     </script>
-    @stack('scripts')
+    @yield('scripts')
 
     @include('partials.footer')
 

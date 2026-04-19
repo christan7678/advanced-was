@@ -21,6 +21,11 @@
             </div>
 
             <div class="detail-row">
+                <span class="detail-label">Booking Code</span>
+                <span class="detail-val">{{ $booking->booking_code }}</span>
+            </div>
+
+            <div class="detail-row">
                 <span class="detail-label">Status</span>
                 @php $statusVal = $booking->payment_status ?: 'pending'; @endphp
                 <span class="badge badge-{{ $statusVal }}">{{ ucfirst($statusVal) }}</span>

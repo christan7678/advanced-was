@@ -117,6 +117,7 @@
                 @endphp
                 <tr>
                     <td>#{{ $booking->id }}</td>
+                    <td>{{ $booking->booking_code }}</td>
                     <td><div class="td-title">{{ $user->name ?? '—' }}</div></td>
                     <td class="td-sub">{{ $user->email ?? '—' }}</td>
                     <td>{{ $booking->number_of_seats }}</td>

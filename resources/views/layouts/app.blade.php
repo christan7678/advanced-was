@@ -31,8 +31,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         (() => {
-            const searchForm = document.getElementById('searchForm');
-            const searchIcon = document.getElementById('searchIconBtn');
             const profileWrap = document.getElementById('profileWrap');
             const profileBtn = document.getElementById('profileBtn');
             const profileMega = document.getElementById('profileMega');
@@ -52,12 +50,6 @@
                 closeMenu();
             }
 
-            searchIcon.addEventListener('click', () => {
-                closeAll();
-                searchForm.classList.add('expanded');
-                searchForm.querySelector('input').focus();
-            });
-
             profileBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 closeMenu();
@@ -73,10 +65,6 @@
             });
 
             document.addEventListener('click', e => {
-                if (!searchForm.contains(e.target)) {
-                    searchForm.classList.remove('expanded');
-                }
-
                 if (!profileWrap.contains(e.target)) {
                     closeProfile();
                 }

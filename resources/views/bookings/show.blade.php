@@ -1,10 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
+    @php
+        $isPastBooking = $booking->event && $booking->event->date && $booking->event->date->lt(today());
+    @endphp
+
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>Booking #{{ $booking->id }}</h2>
-            <a href="{{ route('bookings.index') }}" class="btn btn-secondary">Back</a>
+            <div class="d-flex gap-2">
+                @if($booking->ticket && $booking->payment_status !== 'cancelled')
+                    <a href="{{ route('tickets.qr', $booking->ticket) }}" class="btn btn-primary">View QR</a>
+                @endif
+                <a href="{{ route('bookings.index') }}" class="btn btn-secondary">Back</a>
+            </div>
         </div>
 
         <table class="table table-bordered">
@@ -35,15 +44,23 @@
                 <td>RM {{ number_format($booking->event->price * $booking->number_of_seats, 2) }}</td>
             </tr>
             <tr>
+                <th>Booking Code</th>
+                <td>{{ $booking->booking_code ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <th>Ticket Code</th>
+                <td>{{ optional($booking->ticket)->ticket_code ?? 'Not available' }}</td>
+            </tr>
+            <tr>
                 <th>Status</th>
                 <td>
-                    <span class="badge bg-{{ match($booking->booking_status) {
-                        'upcoming' => 'primary',
+                    <span class="badge bg-{{ match($booking->payment_status) {
+                        'pending' => 'warning',
                         'completed' => 'success',
                         'cancelled' => 'danger',
                         default => 'secondary'
                     } }}">
-                        {{ ucfirst($booking->booking_status) }}
+                        {{ ucfirst($booking->payment_status ?? 'unknown') }}
                     </span>
                 </td>
             </tr>
@@ -56,12 +73,16 @@
             @can('isAdmin')
                 <a href="{{ route('bookings.edit', $booking) }}" class="btn btn-warning">Edit Status</a>
             @else
-                <form action="{{ route('bookings.destroy', $booking) }}" method="POST" class="d-inline"
-                    onsubmit="return confirm('Delete this booking?')">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger">Delete Booking</button>
-                </form>
+                @if(!$isPastBooking && $booking->payment_status !== 'cancelled')
+                    <form action="{{ route('bookings.destroy', $booking) }}" method="POST" class="d-inline"
+                        onsubmit="return confirm('Cancel this booking?')">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-danger">Cancel Booking</button>
+                    </form>
+                @elseif($isPastBooking)
+                    <span class="badge bg-secondary">Past bookings cannot be cancelled</span>
+                @endif
             @endcan
     </div>
 @endsection

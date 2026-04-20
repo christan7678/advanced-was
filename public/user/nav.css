@@ -110,63 +110,6 @@ body {
 }
 
 /* ============================================================
-   SEARCH
-   ============================================================ */
-.search-form {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* Hidden by default; shown when .expanded */
-.search-input-wrap { display: none; position: relative; align-items: center; }
-.search-submit     { display: none; }
-
-.search-form.expanded .search-icon-btn  { display: none; }
-.search-form.expanded .search-input-wrap { display: flex; }
-.search-form.expanded .search-submit    { display: flex; }
-
-.search-icon-inner {
-    position: absolute;
-    top: 50%;
-    left: 11px;
-    transform: translateY(-50%);
-    color: #9aa1a9;
-    pointer-events: none;
-}
-
-.search-input {
-    width: 220px;
-    height: 36px;
-    padding: 0 14px 0 36px;
-    border: 1px solid #dce1e7;
-    border-radius: 10px;
-    font-size: 13px;
-    background-color: #ffffff;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
-}
-
-.search-submit {
-    height: 36px;
-    padding: 0 14px;
-    background-color: #0d6efd;
-    color: #ffffff;
-    border: none;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    align-items: center;
-}
-
-.search-submit:hover { background-color: #0b5ed7; }
-
-/* ============================================================
    PROFILE MEGA DROPDOWN
    ============================================================ */
 /* ---- Shared dropdown shell ---- */

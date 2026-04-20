@@ -5,7 +5,9 @@ use App\Models\Booking;
 use App\Models\Event;
 use App\Models\PromoCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 
 class BookingController extends Controller
 {
@@ -43,7 +45,7 @@ class BookingController extends Controller
             return redirect()->route('bookings.index')->with('error', 'You do not have permission to view this booking.');
         }
 
-        $booking->load(['user', 'event']);
+        $booking->load(['user', 'event', 'ticket']);
         return view('bookings.show', compact('booking'));
     }
 
@@ -78,36 +80,57 @@ class BookingController extends Controller
             'total_amount' => 'required|numeric|min:0',
         ]);
 
-        $event = Event::findOrFail($request->event_id);
-
-        // Check available seats
-        if ($request->number_of_seats > $event->available_seats) {
-            return back()->withErrors(['number_of_seats' => 'Not enough available seats.']);
-        }
-
-        // Validate total_amount (anti-tampering check)
-        $expectedTotal = $event->price * $request->number_of_seats;
+        $userId = auth('web')->id();
+        $numberOfSeats = (int) $request->number_of_seats;
         $submittedTotal = (float) $request->total_amount;
-        
-        if (abs($expectedTotal - $submittedTotal) > 0.01) {
-            return back()->withErrors(['total_amount' => 'Invalid total amount. Please try again.']);
-        }
-
-        // Generate unique booking code
         $bookingCode = 'BK' . strtoupper(uniqid());
 
-        // Create booking with submitted total_amount
-        Booking::create([
-            'booking_code' => $bookingCode,
-            'user_id' => auth('web')->id(),
-            'event_id' => $event->id,
-            'number_of_seats' => $request->number_of_seats,
-            'total_amount' => $submittedTotal,
-            'payment_status' => 'pending', // default status
-        ]);
+        DB::transaction(function () use ($request, $userId, $numberOfSeats, $submittedTotal, $bookingCode) {
+            $event = Event::whereKey($request->event_id)->lockForUpdate()->firstOrFail();
 
-        // Decrease available seats
-        $event->decrement('available_seats', $request->number_of_seats);
+            if ($numberOfSeats > $event->available_seats) {
+                throw ValidationException::withMessages([
+                    'number_of_seats' => 'Not enough available seats.',
+                ]);
+            }
+
+            if ($event->date && $event->date->lt(today())) {
+                throw ValidationException::withMessages([
+                    'event_id' => 'Past events cannot be booked.',
+                ]);
+            }
+
+            $expectedTotal = (float) $event->price * $numberOfSeats;
+            if (abs($expectedTotal - $submittedTotal) > 0.01) {
+                throw ValidationException::withMessages([
+                    'total_amount' => 'Invalid total amount. Please try again.',
+                ]);
+            }
+
+            $booking = Booking::create([
+                'booking_code' => $bookingCode,
+                'user_id' => $userId,
+                'event_id' => $event->id,
+                'number_of_seats' => $numberOfSeats,
+                'total_amount' => $submittedTotal,
+                'payment_status' => 'pending',
+            ]);
+
+            $qrCodePaths = [
+                'storage/qrs/qr1.jpg',
+                'storage/qrs/qr2.jpg',
+                'storage/qrs/qr3.jpg',
+            ];
+            $qrCodePath = $qrCodePaths[($booking->id - 1) % count($qrCodePaths)];
+
+            $booking->ticket()->create([
+                'user_id' => $userId,
+                'event_id' => $event->id,
+                'ticket_code' => 'TK' . $booking->id,
+                'qr_code_path' => $qrCodePath,
+            ]);
+            $event->decrement('available_seats', $numberOfSeats);
+        });
 
         return redirect()->route('bookings.index')
             ->with('success', 'Booking confirmed! Your booking code is ' . $bookingCode);
@@ -158,16 +181,25 @@ class BookingController extends Controller
      */
     public function destroy(Booking $booking)
     {
-        if (!Gate::allows('isAdmin') && $booking->user_id !== auth()->id()) {
+        if ( $booking->user_id !== auth()->id()) {
             return redirect()->route('bookings.index')->with('error', 'You do not have permission to cancel this booking.');
         }
 
-        // Restore seats if booking was active
-        if ($booking->payment_status !== 'cancelled') {
-            $booking->event->increment('available_seats', $booking->number_of_seats);
+        $booking->loadMissing('event');
+
+        if ($booking->event && $booking->event->date && $booking->event->date->lt(today())) {
+            return redirect()->route('bookings.index', ['tab' => 'past'])
+                ->with('error', 'Past bookings cannot be cancelled.');
         }
 
-        $booking->delete();
+        DB::transaction(function () use ($booking) {
+            if ($booking->payment_status !== 'cancelled' && $booking->event) {
+                $booking->event->increment('available_seats', $booking->number_of_seats);
+            }
+
+            $booking->tickets()->delete();
+            $booking->delete();
+        });
 
         return redirect()->route('bookings.index')
             ->with('success', 'Booking cancelled!');

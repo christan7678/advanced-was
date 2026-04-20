@@ -52,7 +52,7 @@ class User extends Authenticatable
     }
 
     public function tickets(){
-        return $this->hasMany(Booking::class);
+        return $this->hasMany(Ticket::class);
     }
 }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminBookingController extends Controller
 {
@@ -100,11 +101,16 @@ class AdminBookingController extends Controller
     public function cancel(Booking $booking)
     {
         if ($booking->payment_status !== 'cancelled') {
-            $booking->load('event');
-            if ($booking->event) {
-                $booking->event->increment('available_seats', (int) $booking->number_of_seats);
-            }
-            $booking->update(['payment_status' => 'cancelled']);
+            DB::transaction(function () use ($booking) {
+                $booking->loadMissing('event');
+
+                if ($booking->event) {
+                    $booking->event->increment('available_seats', (int) $booking->number_of_seats);
+                }
+
+                $booking->tickets()->delete();
+                $booking->update(['payment_status' => 'cancelled']);
+            });
         }
 
         return redirect()
@@ -114,14 +120,16 @@ class AdminBookingController extends Controller
 
     public function destroy(Booking $booking)
     {
-        if ($booking->payment_status !== 'cancelled') {
-            $booking->load('event');
-            if ($booking->event) {
+        DB::transaction(function () use ($booking) {
+            $booking->loadMissing('event');
+
+            if ($booking->payment_status !== 'cancelled' && $booking->event) {
                 $booking->event->increment('available_seats', (int) $booking->number_of_seats);
             }
-        }
 
-        $booking->delete();
+            $booking->tickets()->delete();
+            $booking->delete();
+        });
 
         return redirect()
             ->route('admin.bookings.index')

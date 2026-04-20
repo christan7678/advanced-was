@@ -5,10 +5,12 @@
 @endsection
 
 @section('content')
+    @php
+        $isPastEvent = $event->date && $event->date->lt(today());
+    @endphp
 
     <div class="event-detail-page">
 
-        <!-- Hero Section -->
         <div class="detail-hero">
             <img src="{{ $event->image ? asset('storage/' . $event->image) : 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1600&h=600&fit=crop' }}"
                 alt="{{ $event->name }}">
@@ -27,13 +29,9 @@
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="detail-container">
 
-            <!-- Left Column -->
             <div class="detail-left">
-
-                <!-- About Event -->
                 <div class="detail-section">
                     <h3>About this event</h3>
                     <p>
@@ -41,7 +39,6 @@
                     </p>
                 </div>
 
-                <!-- Event Details -->
                 <div class="detail-section">
                     <h3>Event Details</h3>
                     <div class="detail-info-list">
@@ -49,15 +46,14 @@
                         <div><strong>Time:</strong> {{ $event->time }}</div>
                         <div><strong>Venue:</strong> {{ $event->venue }}</div>
                         @if($event->organizer)
-                            <div><strong>👤 Organizer:</strong> {{ $event->organizer }}</div>
+                            <div><strong>Organizer:</strong> {{ $event->organizer }}</div>
                         @endif
                         @if($event->artist)
-                            <div><strong>🎤 Artist/Performer:</strong> {{ $event->artist }}</div>
+                            <div><strong>Artist/Performer:</strong> {{ $event->artist }}</div>
                         @endif
                     </div>
                 </div>
 
-                <!-- Ticket Information -->
                 <div class="detail-section">
                     <h3>Ticket Information</h3>
                     <div class="detail-info-list">
@@ -72,7 +68,9 @@
                         <div><strong>Price per Ticket:</strong> <span
                                 style="color: #059669; font-weight: 700; font-size: 16px;">RM{{ number_format($event->price, 2) }}</span>
                         </div>
-                        @if($event->status === 'sold_out')
+                        @if($isPastEvent)
+                            <div style="color: #6b7280; font-weight: 600;">This event has already ended.</div>
+                        @elseif($event->status === 'sold_out')
                             <div style="color: #dc2626; font-weight: 600;">This event is SOLD OUT</div>
                         @elseif($event->available_seats < 10)
                             <div style="color: #f59e0b; font-weight: 600;">Only {{ $event->available_seats }} seats remaining!
@@ -80,20 +78,21 @@
                         @endif
                     </div>
                 </div>
-
             </div>
 
-            <!-- Right Column - Booking Card -->
             <div class="detail-right">
                 <div class="detail-ticket-card">
-
-                    <!-- Price Display -->
                     <div class="detail-ticket-price">RM{{ number_format($event->price, 2) }} per ticket</div>
 
-                    @if($event->status === 'sold_out')
+                    @if($isPastEvent)
+                        <div
+                            style="background: #e5e7eb; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; color: #374151; font-weight: 600; text-align: center;">
+                            This event has ended
+                        </div>
+                    @elseif($event->status === 'sold_out')
                         <div
                             style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 12px; color: #991b1b; font-weight: 600; text-align: center;">
-                            ❌ Sold Out
+                            Sold Out
                         </div>
                     @else
                         <form action="{{ route('bookings.store') }}" method="POST">
@@ -101,7 +100,6 @@
 
                             <input type="hidden" name="event_id" value="{{ $event->id }}">
 
-                            <!-- Quantity Selector -->
                             <div style="margin-bottom: 14px;">
                                 <label
                                     style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 6px; font-size: 13px;">
@@ -115,7 +113,6 @@
                                 </div>
                             </div>
 
-                            <!-- Total Amount Display -->
                             <div
                                 style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px; margin-bottom: 14px; text-align: center;">
                                 <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Total Amount</div>
@@ -124,10 +121,8 @@
                                 </div>
                             </div>
 
-                            <!-- Hidden total_amount field -->
                             <input type="hidden" name="total_amount" value="{{ $event->price }}" id="totalAmountInput">
 
-                            <!-- Book Button -->
                             <button type="submit" class="detail-btn-book" @if($event->available_seats <= 0) disabled @endif>
                                 Book Now
                             </button>
@@ -137,7 +132,6 @@
                             Secure checkout · Your payment is encrypted
                         </div>
                     @endif
-
                 </div>
             </div>
 
@@ -150,12 +144,20 @@
         const maxSeats = {{ $event->available_seats }};
 
         function updateTotal() {
-            const quantity = parseInt(document.getElementById('quantityInput').value) || 1;
+            const quantity = parseInt(document.getElementById('quantityInput')?.value) || 1;
             const total = (quantity * eventPrice).toFixed(2);
             const formattedTotal = 'RM' + parseFloat(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-            document.getElementById('totalDisplay').textContent = formattedTotal;
-            document.getElementById('totalAmountInput').value = total;
+            const totalDisplay = document.getElementById('totalDisplay');
+            const totalAmountInput = document.getElementById('totalAmountInput');
+
+            if (totalDisplay) {
+                totalDisplay.textContent = formattedTotal;
+            }
+
+            if (totalAmountInput) {
+                totalAmountInput.value = total;
+            }
         }
     </script>
 

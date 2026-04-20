@@ -19,13 +19,19 @@ class EventController extends Controller
 
     public function index()
     {
+        $period = request('period', 'upcoming');
         $category = request('category');
         $artist = request('artist');
         $searchQuery = request('q');
 
         $query = Event::with('category')
-            ->where('status', '!=', 'sold_out')
-            ->orderBy('date', 'asc');
+            ->orderBy('date', $period === 'past' ? 'desc' : 'asc');
+
+        if ($period === 'past') {
+            $query->whereDate('date', '<', today());
+        } else {
+            $query->whereDate('date', '>=', today());
+        }
 
         // Filter by category
         if ($category) {
@@ -63,7 +69,7 @@ class EventController extends Controller
             ->filter()
             ->values();
 
-        return view('events.index', compact('groupedEvents', 'categories', 'artists', 'category', 'artist', 'searchQuery'));
+        return view('events.index', compact('groupedEvents', 'categories', 'artists', 'category', 'artist', 'searchQuery', 'period'));
     }
 
     public function create()

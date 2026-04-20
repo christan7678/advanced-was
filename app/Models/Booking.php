@@ -25,4 +25,14 @@ class Booking extends Model
     {
         return $this->belongsTo(Event::class);
     }
+
+    public function ticket()
+    {
+        return $this->hasOne(Ticket::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }

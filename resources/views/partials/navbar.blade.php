@@ -15,23 +15,6 @@
         {{-- Right-side actions --}}
         <div class="nav-actions">
 
-            {{-- Search --}}
-            <form action="{{ route('events.index') }}" method="GET" class="search-form" id="searchForm">
-                <button type="button" class="icon-btn search-icon-btn" id="searchIconBtn" title="Search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.868-3.834zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                    </svg>
-                </button>
-                <div class="search-input-wrap">
-                    <svg class="search-icon-inner" xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.868-3.834zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                    </svg>
-                    <input type="text" name="search" class="search-input"
-                        placeholder="Search events…" value="{{ request('search') }}">
-                </div>
-                <button type="submit" class="search-submit">Search</button>
-            </form>
-
             {{-- Profile mega dropdown --}}
             <div class="profile-mega-wrap" id="profileWrap">
                 <button class="icon-btn profile-mega-btn" id="profileBtn" title="Account" type="button">
@@ -78,10 +61,6 @@
                                 <p class="profile-mega-label">My Account</p>
 
                                 <div class="profile-user-card">
-                                    <div class="profile-user-avatar">
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                    </div>
-
                                     <div class="profile-user-info">
                                         <div class="profile-user-name">{{ Auth::user()->name }}</div>
                                         <div class="profile-user-email">{{ Auth::user()->email }}</div>
@@ -143,13 +122,6 @@
                 </button>
  
                 <div class="profile-mega mobile-menu-dropdown" id="menuPopup">
-                    {{-- Inline search inside mobile menu --}}
-                    <div class="mobile-search-bar">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                        <form action="{{ route('events.index') }}" method="GET" style="flex:1">
-                            <input type="text" name="search" placeholder="Search events…" value="{{ request('search') }}" class="mobile-search-input">
-                        </form>
-                    </div>
  
                     <div class="profile-mega-inner">
                         <div class="profile-mega-col">
@@ -208,13 +180,6 @@
                     </div>
                 </div>
             </div>
-
-
-
-
-
-
-
         </div>
     </div>
 

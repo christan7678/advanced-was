@@ -44,7 +44,7 @@
                             style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
                             required id="eventSelect">
                             <option value="">-- Choose an event --</option>
-                            @forelse(\App\Models\Event::where('status', '!=', 'sold_out')->orderBy('date')->get() as $evt)
+                            @forelse(\App\Models\Event::whereDate('date', '>=', today())->where('status', '!=', 'sold_out')->orderBy('date')->get() as $evt)
                                 <option value="{{ $evt->id }}" data-price="{{ $evt->price }}"
                                     data-available="{{ $evt->available_seats }}">
                                     {{ $evt->name }} - {{ $evt->date->format('d M Y') }} ({{ $evt->available_seats }} seats

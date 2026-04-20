@@ -8,7 +8,18 @@
 
 <!-- Events Top Bar -->
 <div class="events-topbar">
-    <h2 class="section-title">Upcoming Events</h2>
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px;">
+        <h2 class="section-title" style="margin: 0;">
+            {{ $period === 'past' ? 'Past Events' : 'Upcoming Events' }}
+        </h2>
+
+        <div class="event-filter-tabs">
+            <a href="{{ route('events.index', array_merge(request()->except('page', 'period'), ['period' => 'upcoming'])) }}"
+               class="event-filter-tab {{ $period !== 'past' ? 'active' : '' }}">Upcoming</a>
+            <a href="{{ route('events.index', array_merge(request()->except('page', 'period'), ['period' => 'past'])) }}"
+               class="event-filter-tab {{ $period === 'past' ? 'active' : '' }}">Past</a>
+        </div>
+    </div>
 
     <div class="event-filter-wrap" id="eventFilterWrap">
         <button class="filter-toggle-btn" id="filterToggleBtn" type="button">
@@ -22,6 +33,13 @@
                 <div class="event-filter-group">
                     <div class="event-filter-label">Search</div>
                     <form method="GET" action="{{ route('events.index') }}" style="display: grid; gap: 8px;">
+                        <input type="hidden" name="period" value="{{ $period }}">
+                        @if($category)
+                            <input type="hidden" name="category" value="{{ $category }}">
+                        @endif
+                        @if($artist)
+                            <input type="hidden" name="artist" value="{{ $artist }}">
+                        @endif
                         <input 
                             type="text" 
                             name="q" 
@@ -138,7 +156,7 @@
                         </div>
 
                         <a href="{{ route('events.show', $event->id) }}" class="btn-buy">
-                            View & Book
+                            {{ $period === 'past' ? 'View Details' : 'View & Book' }}
                         </a>
                     </div>
                 </div>
@@ -147,9 +165,11 @@
     </div>
 @empty
     <div class="event-empty-state">
-        <div style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 5px;">No Events Found</div>
+        <div style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 5px;">
+            {{ $period === 'past' ? 'No Past Events Found' : 'No Upcoming Events Found' }}
+        </div>
         <div style="color: #6b7280;">Try adjusting your filters or come back later for more exciting events!</div>
-        <a href="{{ route('events.index') }}" style="display: inline-block; margin-top: 15px; background: #2563eb; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+        <a href="{{ route('events.index', ['period' => $period]) }}" style="display: inline-block; margin-top: 15px; background: #2563eb; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600;">
             Clear Filters
         </a>
     </div>

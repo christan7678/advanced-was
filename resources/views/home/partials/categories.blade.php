@@ -33,7 +33,7 @@
                     </div>
 
                     <div class="category-foot">
-                        <span>{{ $category['min_price'] !== null ? 'From RM' . number_format((float) $category['min_price'], 2) : 'Price TBA' }}</span>
+                        <span>{{ $category['price'] !== null ? 'From RM' . number_format((float) $category['price'], 2) : 'Price TBA' }}</span>
                         <span>{{ $canBrowseEvents ? 'Open category' : 'Sign in to browse' }}</span>
                     </div>
                 </a>

@@ -54,12 +54,12 @@
             <tr>
                 <th>Status</th>
                 <td>
-                    <span class="badge bg-{{ match($booking->payment_status) {
-                        'pending' => 'warning',
-                        'completed' => 'success',
-                        'cancelled' => 'danger',
-                        default => 'secondary'
-                    } }}">
+                    <span class="badge bg-{{ match ($booking->payment_status) {
+        'pending' => 'warning',
+        'completed' => 'success',
+        'cancelled' => 'danger',
+        default => 'secondary'
+    } }}">
                         {{ ucfirst($booking->payment_status ?? 'unknown') }}
                     </span>
                 </td>
@@ -70,19 +70,15 @@
             </tr>
         </table>
 
-            @can('isAdmin')
-                <a href="{{ route('bookings.edit', $booking) }}" class="btn btn-warning">Edit Status</a>
-            @else
-                @if(!$isPastBooking && $booking->payment_status !== 'cancelled')
-                    <form action="{{ route('bookings.destroy', $booking) }}" method="POST" class="d-inline"
-                        onsubmit="return confirm('Cancel this booking?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger">Cancel Booking</button>
-                    </form>
-                @elseif($isPastBooking)
-                    <span class="badge bg-secondary">Past bookings cannot be cancelled</span>
-                @endif
-            @endcan
+        @if(!$isPastBooking && $booking->payment_status !== 'cancelled')
+            <form action="{{ route('bookings.destroy', $booking) }}" method="POST" class="d-inline"
+                onsubmit="return confirm('Cancel this booking?')">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger">Cancel Booking</button>
+            </form>
+        @elseif($isPastBooking)
+            <span class="badge bg-secondary">Past bookings cannot be cancelled</span>
+        @endif
     </div>
 @endsection

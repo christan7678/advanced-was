@@ -19,14 +19,14 @@ class AdminUserController extends Controller
 
         // Get all users
         $usersQuery = User::query();
-        
+
         if ($q !== '') {
             $usersQuery->where(function ($sub) use ($q) {
                 $sub->where('name', 'like', '%' . $q . '%')
                     ->orWhere('email', 'like', '%' . $q . '%');
             });
         }
-        
+
         $users = $usersQuery->latest()->get();
 
         // For now, return empty collection for admins since there's no admin table
@@ -62,7 +62,7 @@ class AdminUserController extends Controller
     public function show(User $user)
     {
         $user->load(['bookings.event.category']);
-        
+
         return view('admin.users.show', compact('user'));
     }
 
@@ -104,39 +104,39 @@ class AdminUserController extends Controller
                 'email' => 'required|email|unique:users,email,' . $user->id,
             ]);
 
-            $user->update([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-            ]);
+            $user->update($validated);
 
             if ($request->filled('password')) {
                 $pwValidated = $request->validate([
                     'password' => 'required|string|min:6|confirmed',
                 ]);
+
                 $user->update([
                     'password' => bcrypt($pwValidated['password']),
                 ]);
             }
 
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'Account updated successfully.'], 200);
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Account updated successfully.'
+                ], 200);
             }
 
             return redirect()
                 ->route('admin.users.index')
                 ->with('success', 'Account updated successfully.');
+
         } catch (\Illuminate\Validation\ValidationException $e) {
-            if ($request->expectsJson()) {
-                return response()->json(['errors' => $e->errors()], 422);
-            }
-            throw $e;
+            return response()->json([
+                'errors' => $e->errors()
+            ], 422);
         }
     }
 
     public function getBookings(User $user)
     {
         $bookings = $user->bookings()->with('event.category')->latest()->get();
-        
+
         return response()->json([
             'bookings' => $bookings->map(function ($booking) {
                 return [
@@ -151,27 +151,29 @@ class AdminUserController extends Controller
             'total' => $bookings->count(),
         ]);
     }
-    
+
     public function destroy(User $user)
-    {
-        try {
-            $user->delete();
+{
+    try {
+        $user->bookings()->delete();
+        $user->tickets()->delete();
 
-            if (request()->expectsJson()) {
-                return response()->json(['message' => 'Account deleted successfully.'], 200);
-            }
+        $user->delete();
 
-            return redirect()
-                ->route('admin.users.index')
-                ->with('success', 'Account deleted successfully.');
-        } catch (\Exception $e) {
-            if (request()->expectsJson()) {
-                return response()->json(['error' => 'Failed to delete account: ' . $e->getMessage()], 500);
-            }
-
-            return redirect()
-                ->route('admin.users.index')
-                ->with('error', 'Failed to delete account: ' . $e->getMessage());
+        if (request()->ajax() || request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Account deleted successfully.'
+            ], 200);
         }
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Account deleted successfully.');
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Failed to delete account.'
+        ], 500);
     }
+}
 }

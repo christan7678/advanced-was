@@ -28,8 +28,8 @@ class CategoryController extends Controller
             $categories = Category::all();
             return view('admin.categories.index', compact('categories'));
         }
-        $categories = Category::all();
-        return view('categories.index', compact('categories'));
+
+        return redirect()->route('events.index');
     }
 
     /**
@@ -70,11 +70,11 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        $category->load('events');
         if (Gate::allows('isAdmin')) {
             return redirect()->route('admin.categories.edit', $category);
         }
-        return view('categories.show', compact('category'));
+
+        return redirect()->route('events.index', ['category' => $category->name]);
     }
 
     /**
@@ -82,7 +82,7 @@ class CategoryController extends Controller
      */
     public function events(Category $category)
     {
-        return $this->show($category);
+        return redirect()->route('events.index', ['category' => $category->name]);
     }
 
     /**

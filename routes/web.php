@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CategoryController;
@@ -15,11 +13,6 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
-
-Route::resource('categories', CategoryController::class);
-Route::get('/categories/{category}/events', [CategoryController::class, 'events'])->name('categories.events');
-
-
 /***** JING YIN EDIT FOR ADMIN!!!!!!!!!!!!! ***********/
 /***************** Admin ******************************/
 Route::get('/admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
@@ -53,18 +46,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::resource('categories', CategoryController::class);
 });
-
-// Admin-only event management
-/**
-Route::middleware('auth:admin')->group(function () {
-    Route::get('/admin/events/create', [EventController::class, 'create'])->name('events.create');
-    Route::post('/events', [EventController::class, 'store'])->name('events.store');
-    Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
-    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
-    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
-});
-*/
-
 
 Route::redirect('/', '/home');
 Route::get('/home/live', [HomeController::class, 'live'])->name('home.live');
@@ -124,6 +105,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/change-password', [UserController::class, 'password'])->name('profile.password');
     Route::post('/profile/change-password', [UserController::class, 'updatePassword']);
 
+    Route::resource('categories', CategoryController::class)->only(['index', 'show']);
+    Route::get('/categories/{category}/events', [CategoryController::class, 'events'])->name('categories.events');
 });
 
 // check auth status route for testing

@@ -131,8 +131,8 @@ class HomeController extends Controller
                     'name' => $category->name,
                     'color' => $category->color ?: '#0b3770',
                     'upcoming_events_count' => $events->count(),
-                    'available_seats' => $events->sum('available_seats'),
-                    'min_price' => $events->min('price'),
+                    'available_seats' => $nextEvent ? $nextEvent->available_seats : 0,
+                    'price' => $nextEvent ? $nextEvent->price : 0,
                     'next_event_name' => $nextEvent ? $nextEvent->name : null,
                     'next_event_date' => $nextEvent && $nextEvent->date ? $nextEvent->date->format('d M Y') : null,
                 ];

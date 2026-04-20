@@ -95,8 +95,8 @@
                                                 <div style="font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 10px;">
                                                     ${{ number_format($booking->total_amount ?? 0, 2) }}
                                                 </div>
-                                                <a href="{{ route('events.show', $event) }}" class="act-btn act-view" style="display: inline-block; margin-bottom: 6px;">
-                                                    View Event
+                                                <a href="{{ route('bookings.show', $booking) }}" class="act-btn act-view" style="display: inline-block; margin-bottom: 6px;">
+                                                    View Booking
                                                 </a>
                                             </div>
                                         </div>

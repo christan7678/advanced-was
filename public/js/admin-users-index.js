@@ -1,137 +1,120 @@
-// Form submit handler for account modal
-document.getElementById('account-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
+// SAFE EVENT BINDING
+function safeGet(id) {
+    return document.getElementById(id);
+}
 
-    const form = this;
-    const errorDiv = document.getElementById('error-messages');
-    const errorList = document.getElementById('error-list');
-    const successDiv = document.getElementById('success-message');
-    const submitBtn = document.getElementById('account-submit-btn');
+// FORM SUBMIT
+const accountForm = safeGet('account-form');
 
-    // Clear previous messages
-    errorDiv.style.display = 'none';
-    successDiv.style.display = 'none';
-    errorList.innerHTML = '';
+if (accountForm) {
+    accountForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-    // Get form data
-    const formData = new FormData(form);
-    const csrfToken = formData.get('_token');
+        const form = this;
+        const errorDiv = safeGet('error-messages');
+        const errorList = safeGet('error-list');
+        const successDiv = safeGet('success-message');
 
-    try {
-        const response = await fetch(form.action, {
-            method: form.method,
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
-            },
-            body: formData,
-        });
+        // Clear messages
+        if (errorDiv) errorDiv.style.display = 'none';
+        if (successDiv) successDiv.style.display = 'none';
+        if (errorList) errorList.innerHTML = '';
 
-        const data = await response.json();
+        const formData = new FormData(form);
+        const csrfToken = formData.get('_token');
 
-        if (response.ok) {
-            // Success - show message and reload
-            successDiv.style.display = 'block';
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
-        } else {
-            // Validation errors
-            if (data.errors) {
-                Object.keys(data.errors).forEach(field => {
-                    const messages = data.errors[field];
-                    messages.forEach(message => {
-                        const li = document.createElement('li');
-                        li.textContent = message;
-                        errorList.appendChild(li);
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (successDiv) successDiv.style.display = 'block';
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                if (data.errors && errorList) {
+                    Object.values(data.errors).forEach(messages => {
+                        messages.forEach(msg => {
+                            const li = document.createElement('li');
+                            li.textContent = msg;
+                            errorList.appendChild(li);
+                        });
                     });
-                });
-            } else if (data.message) {
-                const li = document.createElement('li');
-                li.textContent = data.message;
-                errorList.appendChild(li);
+                } else if (data.message && errorList) {
+                    const li = document.createElement('li');
+                    li.textContent = data.message;
+                    errorList.appendChild(li);
+                }
+
+                if (errorDiv) errorDiv.style.display = 'block';
             }
-            errorDiv.style.display = 'block';
+        } catch (error) {
+            console.error('Form submit error:', error);
         }
-    } catch (error) {
-        console.error('Form submit error:', error);
-        const li = document.createElement('li');
-        li.textContent = 'An error occurred. Please try again.';
-        errorList.appendChild(li);
-        errorDiv.style.display = 'block';
-    }
-});
+    });
+}
 
-function openAccountModal(type = 'user') {
-    document.getElementById('account-modal').style.display = 'flex';
+// MODAL FUNCTIONS
+function openAccountModal() {
+    safeGet('account-modal').style.display = 'flex';
 
-    const form = document.getElementById('account-form');
-    const title = document.getElementById('account-modal-title');
-    const submitBtn = document.getElementById('account-submit-btn');
-    const nameInput = document.getElementById('account-name');
-    const emailInput = document.getElementById('account-email');
-    const passwordField = document.getElementById('password-field');
-    const passwordConfirmField = document.getElementById('password-confirmation-field');
-    const passwordSection = document.getElementById('password-section');
+    const form = safeGet('account-form');
+    const nameInput = safeGet('account-name');
+    const emailInput = safeGet('account-email');
+    const passwordField = safeGet('password-field');
+    const passwordConfirmField = safeGet('password-confirmation-field');
+    const passwordSection = safeGet('password-section');
 
-    // Clear error/success messages
-    document.getElementById('error-messages').style.display = 'none';
-    document.getElementById('success-message').style.display = 'none';
+    safeGet('error-messages').style.display = 'none';
+    safeGet('success-message').style.display = 'none';
 
-    // Reset form
     nameInput.value = '';
     emailInput.value = '';
     passwordField.value = '';
     passwordConfirmField.value = '';
 
-    // Set form action for creating new account
     form.action = '/admin/users';
     form.method = 'POST';
 
-    // Make password required for new accounts
     passwordField.required = true;
     passwordConfirmField.required = true;
     passwordSection.style.display = 'block';
-    document.getElementById('password-required').style.display = 'inline';
-    document.getElementById('password-confirm-required').style.display = 'inline';
 
-    title.textContent = 'Add User';
-    submitBtn.textContent = 'Save User';
+    safeGet('account-modal-title').textContent = 'Add User';
+    safeGet('account-submit-btn').textContent = 'Save User';
 }
 
 function openEditModal(name, email, userId) {
-    document.getElementById('account-modal').style.display = 'flex';
+    safeGet('account-modal').style.display = 'flex';
 
-    const form = document.getElementById('account-form');
-    const title = document.getElementById('account-modal-title');
-    const submitBtn = document.getElementById('account-submit-btn');
-    const nameInput = document.getElementById('account-name');
-    const emailInput = document.getElementById('account-email');
-    const passwordField = document.getElementById('password-field');
-    const passwordConfirmField = document.getElementById('password-confirmation-field');
-    const passwordSection = document.getElementById('password-section');
+    const form = safeGet('account-form');
+    const nameInput = safeGet('account-name');
+    const emailInput = safeGet('account-email');
+    const passwordField = safeGet('password-field');
+    const passwordConfirmField = safeGet('password-confirmation-field');
+    const passwordSection = safeGet('password-section');
 
-    // Clear error/success messages
-    document.getElementById('error-messages').style.display = 'none';
-    document.getElementById('success-message').style.display = 'none';
+    safeGet('error-messages').style.display = 'none';
+    safeGet('success-message').style.display = 'none';
 
-    // Set form action for updating account - use template string to ensure userId is included
     form.action = `/admin/users/${userId}`;
     form.method = 'POST';
 
-    // Remove existing _method field if any
     let methodField = form.querySelector('input[name="_method"]');
-    if (methodField) {
-        methodField.remove();
-    }
+    if (methodField) methodField.remove();
 
-    // Create and add new _method field for PUT request
     methodField = document.createElement('input');
     methodField.type = 'hidden';
     methodField.name = '_method';
     methodField.value = 'PUT';
-    
-    // Insert after CSRF token
+
     const csrfField = form.querySelector('input[name="_token"]');
     csrfField.parentNode.insertBefore(methodField, csrfField.nextSibling);
 
@@ -140,117 +123,114 @@ function openEditModal(name, email, userId) {
     passwordField.value = '';
     passwordConfirmField.value = '';
 
-    // Hide password fields for editing
     passwordField.required = false;
     passwordConfirmField.required = false;
     passwordSection.style.display = 'none';
 
-    title.textContent = 'Edit Account';
-    submitBtn.textContent = 'Update Account';
+    safeGet('account-modal-title').textContent = 'Edit Account';
+    safeGet('account-submit-btn').textContent = 'Update Account';
 }
 
+function closeModal(id) {
+    const el = safeGet(id);
+    if (el) el.style.display = 'none';
+}
+
+// DELETE USER
 function confirmDelete(name, userId) {
-    if (confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
+    if (confirm(`Are you sure you want to delete ${name}?`)) {
         deleteUser(userId);
     }
 }
 
 function deleteUser(userId) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]');
-    if (!csrfToken) {
-        alert('Security token not found. Please refresh the page.');
-        return;
-    }
-    
-    const token = csrfToken.getAttribute('content');
-    
+    if (!csrfToken) return alert('Missing CSRF token');
+
     fetch(`/admin/users/${userId}`, {
         method: 'DELETE',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': token,
+            'X-CSRF-TOKEN': csrfToken.content,
             'Accept': 'application/json',
         },
     })
-    .then(async response => {
-        const data = await response.json();
-        if (response.ok) {
-            alert('Account deleted successfully!');
-            location.reload();
-        } else {
-            alert('Failed to delete account: ' + (data.error || 'Unknown error'));
-            console.error('Error response:', data);
-        }
-    })
-    .catch(error => {
-        console.error('Delete error:', error);
-        alert('An error occurred while deleting the account. Please check the console.');
-    });
-}
-
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-}
-
-function filterAccounts() {
-    const search = document.getElementById('accountSearch').value.toLowerCase().trim();
-
-    // Call backend API to search users
-    fetch(`/admin/users/search?q=${encodeURIComponent(search)}`)
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
-            const tableBody = document.getElementById('usersTableBody');
-            const noUsersRow = document.getElementById('noUsersRow');
-            const usersCountText = document.getElementById('usersCountText');
-
-            // Clear existing rows except noUsersRow
-            const rows = tableBody.querySelectorAll('tr[data-type]');
-            rows.forEach(row => row.remove());
-
-            if (data.users.length === 0) {
-                // Show no results message
-                noUsersRow.style.display = '';
-                usersCountText.textContent = '0 accounts';
-            } else {
-                // Hide no results message
-                noUsersRow.style.display = 'none';
-
-                // Build and insert new rows
-                data.users.forEach(user => {
-                    const tr = document.createElement('tr');
-                    tr.setAttribute('data-type', 'user');
-                    tr.setAttribute('data-name', user.name);
-                    tr.setAttribute('data-email', user.email);
-                    tr.innerHTML = `
-                        <td>
-                            <div class="account-person">
-                                <div class="user-avatar" style="background:#185FA5;">
-                                    ${user.name.substring(0, 2).toUpperCase()}
-                                </div>
-                                <span class="td-title">${user.name}</span>
-                            </div>
-                        </td>
-                        <td class="td-sub">${user.email}</td>
-                        <td>${user.bookings_count}</td>
-                        <td>${user.created_at}</td>
-                        <td>
-                            <div class="action-group">
-                                <button type="button" class="act-btn" onclick="openEditModal('${user.name.replace(/'/g, "\\'")}', '${user.email.replace(/'/g, "\\'")}', ${user.id})">Edit</button>
-                                <a href="/admin/users/${user.id}" class="act-btn act-view">View</a>
-                                <button type="button" class="act-btn act-del" onclick="confirmDelete('${user.name.replace(/'/g, "\\'")}', ${user.id})">Delete</button>
-                            </div>
-                        </td>
-                    `;
-                    tableBody.appendChild(tr);
-                });
-
-                usersCountText.textContent = data.users.length + (data.users.length === 1 ? ' account' : ' accounts');
+            if (data) {
+                alert('Deleted successfully');
+                location.reload();
             }
         })
-        .catch(error => {
-            console.error('Search error:', error);
-        });
+        .catch(err => console.error(err));
 }
 
+// SEARCH
+function filterAccounts() {
+    const input = safeGet('accountSearch');
+    if (!input) return;
 
-document.getElementById('accountSearch').addEventListener('input', filterAccounts);
+    const search = input.value.toLowerCase().trim();
+
+    fetch(`/admin/users/search?q=${encodeURIComponent(search)}`)
+        .then(res => res.json())
+        .then(data => {
+            const tableBody = safeGet('usersTableBody');
+            const noUsersRow = safeGet('noUsersRow');
+            const usersCountText = safeGet('usersCountText');
+
+            if (!tableBody) return;
+
+            tableBody.querySelectorAll('tr[data-type]').forEach(r => r.remove());
+
+            if (data.users.length === 0) {
+                if (noUsersRow) noUsersRow.style.display = '';
+                if (usersCountText) usersCountText.textContent = '0 accounts';
+                return;
+            }
+
+            if (noUsersRow) noUsersRow.style.display = 'none';
+
+            data.users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-type', 'user');
+
+                tr.innerHTML = `
+                    <td>
+                        <div class="account-person">
+                            <div class="user-avatar" style="background:#185FA5;">
+                                ${user.name.substring(0, 2).toUpperCase()}
+                            </div>
+                            <span class="td-title">${user.name}</span>
+                        </div>
+                    </td>
+                    <td class="td-sub">${user.email}</td>
+                    <td>${user.bookings_count}</td>
+                    <td>${user.created_at}</td>
+                    <td>
+                        <div class="action-group">
+                            <button type="button" class="act-btn" onclick="openEditModal('${user.name.replace(/'/g, "\\'")}', '${user.email.replace(/'/g, "\\'")}', ${user.id})">
+                                Edit
+                            </button>
+                            <a href="/admin/users/${user.id}" class="act-btn act-view">View</a>
+                            <button type="button" class="act-btn act-del" onclick="confirmDelete('${user.name.replace(/'/g, "\\'")}', ${user.id})">
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                tableBody.appendChild(tr);
+            });
+
+            if (usersCountText) {
+                usersCountText.textContent = `${data.users.length} accounts`;
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+// INIT EVENTS
+const searchInput = safeGet('accountSearch');
+if (searchInput) {
+    searchInput.addEventListener('input', filterAccounts);
+}

@@ -141,17 +141,19 @@
 
                         <!-- Availability -->
                         <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">
-                            @if($event->available_seats > 0)
-                                ✅ {{ $event->available_seats }} seats available
-                            @else
+                            @if($event->date && $event->date->lt(today()))
+                                ❌ Event Ended
+                            @elseif($event->status === 'sold_out' || $event->available_seats <= 0)
                                 ❌ Sold Out
+                            @else
+                                ✅ {{ $event->available_seats }} seats available
                             @endif
                         </div>
 
                         <!-- Footer with Price and Button -->
                         <div class="event-footer">
                             <div class="event-price" style="color: #059669; font-weight: 700;">
-                                ${{ number_format($event->price, 2) }}
+                                RM{{ number_format($event->price, 2) }}
                             </div>
                         </div>
 

@@ -30,24 +30,25 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
-            if ($user->role === 'admin') {
-                return redirect('/admin/index');
+            if ($user->role === 'admin' || $user->role === 'super_admin') {
+                return redirect('/admin/dashboard');
             }
 
             return redirect()->intended('/home');
         }
 
         return back()->withErrors([
-            'email' => 'Email 或 password 错误',
+            'email' => 'Email or password incorrect',
         ])->onlyInput('email');
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/login');
     }
 }

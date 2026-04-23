@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+
+
 <div class="auth-card">
 
     {{-- Brand Header --}}
@@ -26,16 +28,18 @@
         Continue with Google
     </a>
 
-    <div class="auth-switch">
-        <span>Are you an admin?</span>
-        <a href="{{ route('admin.login') }}" class="auth-admin-link">Login as Admin</a>
-    </div>
 
     <div class="auth-divider">
         <span class="auth-divider-line"></span>
         <span class="auth-divider-text">or</span>
         <span class="auth-divider-line"></span>
     </div>
+
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
 
     {{-- Login Form --}}
      <form method="POST" action='{{ route("login") }}' aria-label="{{ __('Login') }}">

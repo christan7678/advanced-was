@@ -4,7 +4,7 @@
 @section('page-title', 'Accounts')
 
 @section('topbar-actions')
-    <span class="topbar-date">{{ $users->count() }} total accounts</span>
+    <span class="topbar-date">total {{ $users->count() }} users</span>
 
     <div class="topbar-action-wrap">
         <button type="button" class="btn-primary" onclick="openAccountModal('user')">
@@ -36,15 +36,23 @@
     </button>
 
     <div id="usersSection">
-        <div class="table">
-            <table>
+        <div class="table accounts-table-wrap">
+            <table class="accounts-table">
+                <colgroup>
+                    <col style="width: 25%;">
+                    <col style="width: 22%;">
+                    <col style="width: 11%;">
+                    <col style="width: 12%;">
+                    <col style="width: 30%;">
+                </colgroup>
+
                 <thead>
                     <tr>
                         <th>User</th>
                         <th>Email</th>
                         <th>Bookings</th>
                         <th>Joined</th>
-                        <th>Actions</th>
+                        <th class="actions-col">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="usersTableBody">
@@ -58,12 +66,12 @@
                                     <span class="td-title">{{ $user->name }}</span>
                                 </div>
                             </td>
-                            <td class="td-sub">{{ $user->email }}</td>
+                            <td class="td-sub email-cell">{{ $user->email }}</td>
                             <td>{{ $user->bookings()->count() }}</td>
                             <td>{{ $user->created_at ? $user->created_at->format('d M Y') : '—' }}</td>
-                            <td>
-                                <div class="action-group">
-                                    <button type="button" class="act-btn" onclick="openEditModal('{{ $user->name }}', '{{ $user->email }}', {{ $user->id }})">Edit</button>
+                            <td class="actions-cell">
+                                <div class="action-group action-group-tight">
+                                    <button type="button" class="act-btn" onclick="openEditModal('{{ $user->name }}', '{{ $user->email }}', '{{ $user->phone_number }}',{{ $user->id }})">Edit</button>
                                     <a href="{{ route('admin.users.show', $user->id) }}" class="act-btn act-view">View</a>
                                     <button type="button" class="act-btn act-del" onclick="confirmDelete('{{ $user->name }}', {{ $user->id }})">Delete</button>
                                 </div>
@@ -77,10 +85,17 @@
                 </tbody>
             </table>
         </div>
+        </div>
+    </div>
+    <div class="pagination-row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;">
+        <div class="page-info" id="usersPageInfo">Showing {{ $users->count() }} account(s)</div>
+
+        <div id="usersPaginationControls" class="pagination-controls" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        </div>
     </div>
 </div>
 
-{{-- Add / Edit Account Modal --}}
+{{-- Add / Edit User Account Modal --}}
 <div class="modal-backdrop" id="account-modal" style="display:none;">
     <div class="modal">
         <div class="modal-header">
@@ -95,7 +110,7 @@
 
         {{-- Success message --}}
         <div id="success-message" style="display:none; background:#efe; border:1px solid #cfc; border-radius:4px; padding:12px; margin-bottom:14px; color:#3c3;">
-            Account created successfully!
+            User account created successfully!
         </div>
 
         <form id="account-form" action="{{ route('admin.users.store') }}" method="POST">
@@ -110,6 +125,12 @@
                     <label>Email Address</label>
                     <input id="account-email" name="email" class="form-input" type="email" placeholder="Enter email address" required>
                 </div>
+
+                <div class="form-group form-full">
+                    <label>phone number</label>
+                    <input id="account-phone" name="phone_number" class="form-input" type="text" placeholder="Exp: 60123251236" required>
+                </div>
+                
 
                 <div id="password-section">
                     <div class="form-group form-full">
@@ -136,4 +157,122 @@
 
 @section('scripts')
 <script src="{{ asset('js/admin-users-index.js') }}"></script>
+@endsection
+
+@section('styles')
+<style>
+    .accounts-table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+
+    .accounts-table th,
+    .accounts-table td {
+        vertical-align: middle;
+    }
+
+    .accounts-table th {
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .accounts-table
+    .accounts-table .actions-cell {
+        text-align: right;
+    }
+
+    .accounts-table .email-cell {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .account-person {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    .td-title {
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .action-group-tight {
+        display: inline-flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        width: auto;
+        white-space: nowrap;
+    }
+
+    .action-group-tight .act-btn {
+        min-width: 96px;
+        text-align: center;
+    }
+
+    .actions-col {
+        text-align: center;
+    }
+
+    .pagination-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+    }
+
+    .pagination-controls {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+        min-width: 46px;
+        height: 42px;
+        padding: 0 14px;
+        border: 1px solid #d1d5db;
+        background: #ffffff;
+        color: #374151;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+        background: #f9fafb;
+        border-color: #9ca3af;
+    }
+
+    .pagination-btn.active {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+    }
+
+    .pagination-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .pagination-ellipsis {
+        padding: 0 2px;
+        color: #6b7280;
+        font-weight: 700;
+        user-select: none;
+    }
+</style>
 @endsection

@@ -4,7 +4,7 @@
 @section('page-title', $user->name)
 
 @section('topbar-actions')
-    <a href="{{ route('admin.users.index') }}" class="btn-outline-sm">← Back to users</a>
+    <a href="{{ url()->previous() }}" class="btn-outline-sm">← Back</a>
 @endsection
 
 @section('content')
@@ -108,6 +108,11 @@
                 <div class="form-group form-full">
                     <label>Email Address</label>
                     <input id="edit-email" class="form-input" type="email" name="email" value="{{ $user->email }}" required>
+                </div>
+
+                <div class="form-group form-full">
+                    <label>Phone Number</label>
+                    <input id="admin-phone" name="phone_number" class="form-input" type="text" placeholder="Exp: 60123285123" value="{{ $user->phone_number }}"required>
                 </div>
             </div>
 

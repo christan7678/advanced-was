@@ -15,6 +15,11 @@ class Ticket extends Model
         'event_id',
         'ticket_code',
         'qr_code_path',
+        'status', 
+    ];
+
+    protected $attributes = [
+        'status' => 'active', 
     ];
 
 

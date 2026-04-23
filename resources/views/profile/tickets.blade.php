@@ -3,23 +3,116 @@
 @section('content')
     @php
         $activeTab = request('tab', 'upcoming');
+        $statusFilter = request('status', '');
 
         $bookings = $user->bookings()
             ->with(['event', 'ticket'])
-            ->latest()
             ->get();
 
+        $statusPriority = function ($status) {
+            switch ($status) {
+                case 'completed':
+                case 'confirmed':
+                case 'paid':
+                    return 0;
+                case 'pending':
+                    return 1;
+                case 'refunded':
+                    return 2;
+                case 'cancelled':
+                    return 3;
+                default:
+                    return 4;
+            }
+        };
+
+        $compareBookings = function ($a, $b) use ($activeTab, $statusPriority) {
+            $statusA = $statusPriority($a->payment_status);
+            $statusB = $statusPriority($b->payment_status);
+
+            if ($statusA !== $statusB) {
+                return $statusA <=> $statusB;
+            }
+
+            $timeA = ($a->event && $a->event->date) ? $a->event->date->timestamp : 0;
+            $timeB = ($b->event && $b->event->date) ? $b->event->date->timestamp : 0;
+
+            if ($activeTab === 'past') {
+                return $timeB <=> $timeA; // latest past first
+            }
+
+            return $timeA <=> $timeB; // nearest upcoming first
+        };
+
+        $compareByDateOnly = function ($a, $b) use ($activeTab) {
+            $timeA = ($a->event && $a->event->date) ? $a->event->date->timestamp : 0;
+            $timeB = ($b->event && $b->event->date) ? $b->event->date->timestamp : 0;
+
+            if ($activeTab === 'past') {
+                return $timeB <=> $timeA;
+            }
+
+            return $timeA <=> $timeB;
+        };
+
         $upcomingBookings = $bookings
-            ->filter(fn($booking) => $booking->event && $booking->event->date && $booking->event->date->gte(today()))
-            ->sortBy(fn($booking) => $booking->event->date)
+            ->filter(function ($booking) {
+                return $booking->event &&
+                    $booking->event->date &&
+                    $booking->event->date->gte(today()) &&
+                    $booking->payment_status === 'completed';
+            })
+            ->sort($compareByDateOnly)
             ->values();
 
         $pastBookings = $bookings
-            ->filter(fn($booking) => $booking->event && $booking->event->date && $booking->event->date->lt(today()))
-            ->sortByDesc(fn($booking) => $booking->event->date)
+            ->filter(function ($booking) {
+                return $booking->event &&
+                    $booking->event->date &&
+                    $booking->event->date->lt(today()) &&
+                    $booking->payment_status === 'completed';
+            })
+            ->sort($compareByDateOnly)
             ->values();
 
-        $visibleBookings = $activeTab === 'past' ? $pastBookings : $upcomingBookings;
+        $baseBookings = $bookings->filter(function ($booking) use ($activeTab) {
+            return $booking->event &&
+                $booking->event->date &&
+                (
+                    ($activeTab === 'past' && $booking->event->date->lt(today())) ||
+                    ($activeTab !== 'past' && $booking->event->date->gte(today()))
+                );
+        });
+
+        if ($statusFilter === 'pending') {
+            $visibleBookings = $baseBookings
+                ->filter(function ($booking) {
+                    return $booking->payment_status === 'pending';
+                })
+                ->sort($compareByDateOnly)
+                ->values();
+
+        } elseif ($statusFilter === 'cancelled') {
+            $visibleBookings = $baseBookings
+                ->filter(function ($booking) {
+                    return in_array($booking->payment_status, ['cancelled', 'refunded']);
+                })
+                ->sort($compareBookings)
+                ->values();
+
+        } elseif ($statusFilter === 'confirmed') {
+            $visibleBookings = $baseBookings
+                ->filter(function ($booking) {
+                    return in_array($booking->payment_status, ['completed', 'confirmed', 'paid']);
+                })
+                ->sort($compareByDateOnly)
+                ->values();
+
+        } else {
+            $visibleBookings = $baseBookings
+                ->sort($compareBookings)
+                ->values();
+        }
     @endphp
 
     <div class="account-page">
@@ -51,13 +144,32 @@
                     </div>
 
                     <div style="display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;">
-                        <a href="{{ route('profile.tickets', ['tab' => 'upcoming']) }}"
+                        <a href="{{ route('profile.tickets', ['tab' => 'upcoming', 'status' => $statusFilter]) }}"
                             style="display: inline-block; padding: 10px 16px; border-radius: 999px; text-decoration: none; font-weight: 600; background: {{ $activeTab !== 'past' ? '#2563eb' : '#e5e7eb' }}; color: {{ $activeTab !== 'past' ? 'white' : '#374151' }};">
                             Upcoming
                         </a>
-                        <a href="{{ route('profile.tickets', ['tab' => 'past']) }}"
+                        <a href="{{ route('profile.tickets', ['tab' => 'past', 'status' => $statusFilter]) }}"
                             style="display: inline-block; padding: 10px 16px; border-radius: 999px; text-decoration: none; font-weight: 600; background: {{ $activeTab === 'past' ? '#2563eb' : '#e5e7eb' }}; color: {{ $activeTab === 'past' ? 'white' : '#374151' }};">
                             Past
+                        </a>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;">
+                        <a href="{{ route('profile.tickets', ['tab' => $activeTab]) }}"
+                            style="display: inline-block; padding: 8px 14px; border-radius: 999px; text-decoration: none; font-weight: 600; background: {{ $statusFilter === '' ? '#111827' : '#e5e7eb' }}; color: {{ $statusFilter === '' ? 'white' : '#374151' }};">
+                            All
+                        </a>
+                        <a href="{{ route('profile.tickets', ['tab' => $activeTab, 'status' => 'confirmed']) }}"
+                            style="display: inline-block; padding: 8px 14px; border-radius: 999px; text-decoration: none; font-weight: 600; background: {{ $statusFilter === 'confirmed' ? '#111827' : '#e5e7eb' }}; color: {{ $statusFilter === 'confirmed' ? 'white' : '#374151' }};">
+                            Confirmed
+                        </a>
+                        <a href="{{ route('profile.tickets', ['tab' => $activeTab, 'status' => 'pending']) }}"
+                            style="display: inline-block; padding: 8px 14px; border-radius: 999px; text-decoration: none; font-weight: 600; background: {{ $statusFilter === 'pending' ? '#111827' : '#e5e7eb' }}; color: {{ $statusFilter === 'pending' ? 'white' : '#374151' }};">
+                            Pending
+                        </a>
+                        <a href="{{ route('profile.tickets', ['tab' => $activeTab, 'status' => 'cancelled']) }}"
+                            style="display: inline-block; padding: 8px 14px; border-radius: 999px; text-decoration: none; font-weight: 600; background: {{ $statusFilter === 'cancelled' ? '#111827' : '#e5e7eb' }}; color: {{ $statusFilter === 'cancelled' ? 'white' : '#374151' }};">
+                            Cancelled
                         </a>
                     </div>
 
@@ -89,26 +201,28 @@
                                         </div>
                                         <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">
                                             Booking ID: #{{ $booking->id }} | Ticket:
-                                            {{ $ticket ? $ticket->ticket_code : 'Not available' }} | Seats:
+                                            {{ ($ticket && $booking->payment_status === 'completed') ? $ticket->ticket_code : '-' }} | Seats:
                                             {{ $booking->number_of_seats }} | Payment:
                                             <span
-                                                style="color: {{ $booking->payment_status === 'cancelled' ? '#b91c1c' : '#059669' }}; font-weight: 500;">
+                                                style="color:
+                                                    {{ in_array($booking->payment_status, ['cancelled', 'refunded']) ? '#b91c1c' : ($booking->payment_status === 'pending' ? '#92400e' : '#059669') }};
+                                                    font-weight: 500;">
                                                 {{ ucfirst($booking->payment_status ?? 'unknown') }}
                                             </span>
                                         </div>
                                     </div>
 
                                     <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
-                                        <a href="{{ route('bookings.show', $booking) }}" class="act-btn act-view">
+                                        <a href="{{ route('bookings.show', ['booking' => $booking->id, 'from' => url()->current()]) }}">
                                             View Booking
                                         </a>
 
-                                        @if($ticket && $booking->payment_status !== 'cancelled')
+                                        @if($ticket && $booking->payment_status === 'completed')
                                             <a href="{{ route('tickets.qr', $ticket) }}" class="act-btn"
                                                 style="background: #0f766e; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">
                                                 View QR
                                             </a>
-                                        @elseif($booking->payment_status === 'cancelled')
+                                        @elseif(in_array($booking->payment_status, ['cancelled', 'refunded']))
                                             <span
                                                 style="display: inline-block; background: #fee2e2; color: #991b1b; padding: 6px 12px; border-radius: 4px; font-size: 12px;">
                                                 QR Unavailable

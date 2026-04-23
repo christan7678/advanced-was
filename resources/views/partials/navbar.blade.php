@@ -96,16 +96,15 @@
 
                                 <div class="profile-dropdown-divider"></div>
 
+                                
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="profile-logout-btn">
+                                    <button type="submit" class="profile-mega-item" style="width:100%; text-align:left;">
                                         <span class="profile-mega-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8A1.5 1.5 0 0 0 16 12.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
-                                                <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                                            </svg>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                                         </span>
-                                        <span>Logout</span>
+
+                                        <span>Sign out</span>
                                     </button>
                                 </form>
                             @endauth
@@ -160,7 +159,8 @@
                             </a>
  
                             <p class="profile-mega-label" style="border-top: 1px solid #f1f3f5; padding-top: 14px; margin-top: 6px;">Account</p>
- 
+
+                            @guest
                             <a class="profile-mega-item" href="{{ route('login') }}">
                                 <div class="profile-mega-icon">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
@@ -176,6 +176,20 @@
                                 <div class="profile-mega-item-title">Create account</div>
                                 <svg class="profile-mega-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                             </a>
+                            @endguest
+
+                            @auth
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="profile-mega-item" style="width:100%; text-align:left;">
+                                    <span class="profile-mega-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                    </span>
+
+                                    <span>Sign out</span>
+                                </button>
+                            </form>
+                            @endauth
                         </div>
                     </div>
                 </div>

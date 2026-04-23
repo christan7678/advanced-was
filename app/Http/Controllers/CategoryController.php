@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
@@ -13,9 +14,11 @@ class CategoryController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:admin,web')->only(['index', 'show']);
+        // all person can view index and show pages
+        $this->middleware('auth')->only(['index', 'show']);
 
-        $this->middleware('auth:admin')->except(['index', 'show']);
+        // only admin can view all pages except index and show
+        $this->middleware(['auth', 'role:admin,super_admin'])->except(['index', 'show']);
     }
 
     /**
@@ -24,7 +27,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        if (Gate::allows('isAdmin')) {
+        if (Gate::allows('administration')) {
             $categories = Category::all();
             return view('admin.categories.index', compact('categories'));
         }
@@ -48,7 +51,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        if (Gate::allows('isAdmin')) {
+        if (Gate::allows('administration')) {
             $request->validate([
                 'name' => 'required|string|max:255|unique:categories,name',
                 'color' => 'nullable|string|max:32',
@@ -70,7 +73,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        if (Gate::allows('isAdmin')) {
+        if (Gate::allows('administration')) {
             return redirect()->route('admin.categories.edit', $category);
         }
 
@@ -91,7 +94,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        if (Gate::allows('isAdmin')) {
+        if (Gate::allows('administration')) {
             return view('admin.categories.edit', compact('category'));
         }
         return redirect()->route('admin.categories.index')->with('error', 'You do not have permission.');
@@ -103,7 +106,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        if (Gate::allows('isAdmin')) {
+        if (Gate::allows('administration')) {
             $request->validate([
                 'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
                 'color' => 'nullable|string|max:32',
@@ -125,7 +128,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        if (Gate::allows('isAdmin')){
+        if (Gate::allows('administration')){
         // Prevent deletion if category has events linked to it
             if ($category->events()->count() > 0) {
             return redirect()->route('admin.categories.index')->with('error', 'Cannot delete category — it has events linked to it.');

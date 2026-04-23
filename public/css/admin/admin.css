@@ -901,6 +901,16 @@ td:last-child {
     background: #dcfce7;
     color: #166534;
 }
+.badge-confirmed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-refunded {
+    background: #fcf0dc;
+    color: rgb(196, 105, 20);
+}
+
 
 .badge-cancelled {
     background: #fee2e2;

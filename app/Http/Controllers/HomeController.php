@@ -154,6 +154,6 @@ class HomeController extends Controller
 
     protected function canBrowseEvents(): bool
     {
-        return auth('web')->check() || auth('admin')->check();
+        return auth( )->check();
     }
 }

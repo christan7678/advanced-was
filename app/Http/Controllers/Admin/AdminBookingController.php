@@ -11,7 +11,7 @@ class AdminBookingController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin');
+        $this->middleware(['auth', 'role:admin,super_admin']);
     }
 
     public function index(Request $request)
@@ -25,7 +25,7 @@ class AdminBookingController extends Controller
             ->latest();
 
         if ($status !== '') {
-            $query->where('payment_status', $status);
+            $query->where('booking_status', $status);
         }
 
         if ($event_id) {
@@ -52,23 +52,25 @@ class AdminBookingController extends Controller
             $statsQuery->where('event_id', $event_id);
         }
         
-        $totalBookings = $statsQuery->count();
-        $completed = $statsQuery->where('payment_status', 'completed')->count();
-        $pending = $statsQuery->where('payment_status', 'pending')->count();
-        $cancelled = $statsQuery->where('payment_status', 'cancelled')->count();
+        $totalBookings = (clone $statsQuery)->count();
+        $confirmed = (clone $statsQuery)->where('booking_status', 'confirmed')->count();
+        $pending = (clone $statsQuery)->where('booking_status', 'pending')->count();
+        $cancelled = (clone $statsQuery)->where('booking_status', 'cancelled')->count();
+        $tickets = (clone $statsQuery)->sum('number_of_seats');
 
         if ($event_id) {
-            $event = \App\Models\Event::find($event_id);
+            $event = \App\Models\Event::with('category')->find($event_id);
+
             $current = [
                 'title' => $event ? $event->name : 'Event',
-                'name' => $event ? $event->category->name : 'Category',
+                'name' => $event && $event->category ? $event->category->name : 'Category',
                 'organiser' => $event ? $event->organizer : 'Organizer',
                 'venue' => $event ? $event->venue : 'Venue',
-                'date' => $event ? $event->date->format('d M Y') : 'Date',
-                'time' => $event ? substr($event->time, 0, 5) : 'Time',
-                'tickets' => $statsQuery->sum('number_of_seats'),
+                'date' => $event && $event->date ? $event->date->format('d M Y') : 'Date',
+                'time' => $event && $event->time ? substr($event->time, 0, 5) : 'Time',
+                'tickets' => $tickets,
                 'total_bookings' => $totalBookings,
-                'completed' => $completed,
+                'confirmed' => $confirmed,
                 'pending' => $pending,
                 'cancelled' => $cancelled,
             ];
@@ -80,9 +82,9 @@ class AdminBookingController extends Controller
                 'venue' => 'All Venues',
                 'date' => 'All Time',
                 'time' => 'All Times',
-                'tickets' => Booking::sum('number_of_seats'),
+                'tickets' => $tickets,
                 'total_bookings' => $totalBookings,
-                'completed' => $completed,
+                'confirmed' => $confirmed,
                 'pending' => $pending,
                 'cancelled' => $cancelled,
             ];
@@ -93,14 +95,14 @@ class AdminBookingController extends Controller
 
     public function show(Booking $booking)
     {
-        $booking->load(['user', 'event.category']);
+        $booking->load(['user', 'event.category','payment']);
 
         return view('admin.bookings.show', compact('booking'));
     }
 
-    public function cancel(Booking $booking)
+   public function cancel(Booking $booking)
     {
-        if ($booking->payment_status !== 'cancelled') {
+        if ($booking->booking_status !== 'cancelled') {
             DB::transaction(function () use ($booking) {
                 $booking->loadMissing('event');
 
@@ -109,7 +111,11 @@ class AdminBookingController extends Controller
                 }
 
                 $booking->tickets()->delete();
-                $booking->update(['payment_status' => 'cancelled']);
+
+                $booking->update([
+                    'booking_status' => 'cancelled',
+                    'payment_status' => 'cancelled',
+                ]);
             });
         }
 
@@ -123,7 +129,7 @@ class AdminBookingController extends Controller
         DB::transaction(function () use ($booking) {
             $booking->loadMissing('event');
 
-            if ($booking->payment_status !== 'cancelled' && $booking->event) {
+            if ($booking->booking_status !== 'cancelled' && $booking->event) {
                 $booking->event->increment('available_seats', (int) $booking->number_of_seats);
             }
 

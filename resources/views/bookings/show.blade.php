@@ -8,11 +8,16 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>Booking #{{ $booking->id }}</h2>
-            <div class="d-flex gap-2">
-                @if($booking->ticket && $booking->payment_status !== 'cancelled')
-                    <a href="{{ route('tickets.qr', $booking->ticket) }}" class="btn btn-primary">View QR</a>
+            <div class="d-flex gap-2 " >
+                @if($booking->ticket && $booking->payment_status !== 'cancelled' && $booking->payment_status !== 'refunded')
+                    <a href="{{ route('tickets.qr', ['ticket' => $booking->ticket->id, 'from' => $from ?: url()->current()]) }}" 
+                    class="btn btn-primary">
+                        View QR
+                    </a>
                 @endif
-                <a href="{{ route('bookings.index') }}" class="btn btn-secondary">Back</a>
+                <a href="{{ $from ?:  route('bookings.index') }}" class="btn btn-secondary">
+                    Back
+                </a>
             </div>
         </div>
 
@@ -55,11 +60,11 @@
                 <th>Status</th>
                 <td>
                     <span class="badge bg-{{ match ($booking->payment_status) {
-        'pending' => 'warning',
-        'completed' => 'success',
-        'cancelled' => 'danger',
-        default => 'secondary'
-    } }}">
+                        'pending' => 'warning',
+                        'completed' => 'success',
+                        'cancelled' => 'danger',
+                        default => 'secondary'
+                    } }}">
                         {{ ucfirst($booking->payment_status ?? 'unknown') }}
                     </span>
                 </td>
@@ -70,7 +75,13 @@
             </tr>
         </table>
 
-        @if(!$isPastBooking && $booking->payment_status !== 'cancelled')
+        @if($booking->payment_status === 'pending')
+            <a href="{{ route('payment.show', $booking) }}" class="btn btn-success">
+                Pay Now
+            </a>
+        @endif
+
+        @if(!$isPastBooking && $booking->payment_status !== 'cancelled'&& $booking->payment_status !== 'refunded')
             <form action="{{ route('bookings.destroy', $booking) }}" method="POST" class="d-inline"
                 onsubmit="return confirm('Cancel this booking?')">
                 @csrf

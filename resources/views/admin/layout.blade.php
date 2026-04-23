@@ -72,6 +72,20 @@
             Users
         </a>
 
+        @if(auth()->check() && auth()->user()->role === 'super_admin')
+            @if(Route::has('admin.admins.index'))
+                <a href="{{ route('admin.admins.index') }}"
+                class="sb-item {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    </svg>
+                    Admins
+                </a>
+            @endif
+        @endif
+
         {{-- Categories --}}
         <a href="{{ route('admin.categories.index') }}"
            class="sb-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
@@ -91,7 +105,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('admin.logout') }}"
+            <form method="POST" action="{{ route('logout') }}"
                   onsubmit="return confirm('Are you sure you want to sign out?')">
                 @csrf
                 <button type="submit" class="sb-logout" style="background:none;border:0;padding:0;cursor:pointer;">

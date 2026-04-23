@@ -1,8 +1,20 @@
-(function() {
+(function () {
+    function getToolbar() {
+        return document.querySelector('.toolbar');
+    }
+
+    function getSearchInput() {
+        return document.querySelector('.toolbar-search');
+    }
+
+    function getStatusSelect() {
+        return document.querySelector('.toolbar-select');
+    }
+
     function filterBookings() {
-        const searchInput = document.querySelector('.toolbar-search');
-        const statusSelect = document.querySelector('.toolbar-select');
-        
+        const searchInput = getSearchInput();
+        const statusSelect = getStatusSelect();
+
         if (!searchInput || !statusSelect) {
             return;
         }
@@ -12,45 +24,48 @@
         const rows = document.querySelectorAll('tbody tr');
         let visibleCount = 0;
 
-        rows.forEach(function(row) {
-            // Skip empty message rows
+        rows.forEach(function (row) {
+            // skip empty row
             if (row.querySelector('.td-empty')) {
                 row.style.display = 'none';
                 return;
             }
 
             const cells = row.querySelectorAll('td');
-            let matchSearch = false;
-            let matchStatus = false;
+ const bookingIdCell = cells[0];
+            const bookingCodeCell = cells[1];
+            const userNameCell = cells[2];
+            const emailCell = cells[3];
 
-            // Check search in booking ID, user name, and email only
+            const bookingIdText = bookingIdCell ? bookingIdCell.textContent.toLowerCase() : '';
+            const bookingCodeText = bookingCodeCell ? bookingCodeCell.textContent.toLowerCase() : '';
+            const userNameText = userNameCell ? userNameCell.textContent.toLowerCase() : '';
+            const emailText = emailCell ? emailCell.textContent.toLowerCase() : '';
+
+            // search logic
+            let matchSearch = false;
             if (search === '') {
                 matchSearch = true;
             } else {
-                // Booking ID (first column)
-                const bookingIdCell = cells[0];
-                // User name (second column)  
-                const userNameCell = cells[1];
-                // Email (third column)
-                const emailCell = cells[2];
-                
-                const bookingIdText = bookingIdCell ? bookingIdCell.textContent.toLowerCase() : '';
-                const userNameText = userNameCell ? userNameCell.textContent.toLowerCase() : '';
-                const emailText = emailCell ? emailCell.textContent.toLowerCase() : '';
-                
-                matchSearch = bookingIdText.includes(search) || 
-                             userNameText.includes(search) || 
-                             emailText.includes(search);
+                matchSearch =
+                    bookingIdText.includes(search) ||
+                    bookingCodeText.includes(search) ||
+                    userNameText.includes(search) ||
+                    emailText.includes(search);
             }
 
-            // Check status filter
+            // status logic
+            let matchStatus = false;
             const statusCell = row.querySelector('.badge');
+
             if (status === '') {
                 matchStatus = true;
             } else if (statusCell) {
-                matchStatus = statusCell.textContent.toLowerCase().includes(status);
+                const statusText = statusCell.textContent.toLowerCase().trim();
+                matchStatus = statusText === status;
             }
 
+            // apply
             if (matchSearch && matchStatus) {
                 row.style.display = '';
                 visibleCount++;
@@ -59,40 +74,53 @@
             }
         });
 
-        // Show/hide empty message
-        const emptyRow = document.querySelector('.td-empty');
-        if (emptyRow) {
-            const emptyRowParent = emptyRow.closest('tr');
-            if (emptyRowParent) {
-                emptyRowParent.style.display = visibleCount === 0 ? '' : 'none';
+        // empty message control
+        const emptyCell = document.querySelector('.td-empty');
+        if (emptyCell) {
+            const emptyRow = emptyCell.closest('tr');
+            if (emptyRow) {
+                emptyRow.style.display = visibleCount === 0 ? '' : 'none';
             }
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.querySelector('.toolbar-search');
-        const statusSelect = document.querySelector('.toolbar-select');
-        const form = document.querySelector('.toolbar');
-        
-        if (searchInput && statusSelect) {
-            searchInput.addEventListener('input', filterBookings);
-            statusSelect.addEventListener('change', filterBookings);
-            
-            // Prevent Enter key from submitting form
-            searchInput.addEventListener('keydown', function(e) {
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = getSearchInput();
+        const statusSelect = getStatusSelect();
+        const form = getToolbar();
+
+        if (!form) return;
+
+        let timer = null;
+
+        // 🔍 SEARCH INPUT
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                filterBookings();
+
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    form.submit(); // backend search
+                }, 500);
+            });
+
+            searchInput.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    return false;
+                    form.submit();
                 }
             });
         }
-        
-        // Prevent form submission
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                return false;
+
+  
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function () {
+                filterBookings();
+                form.submit();
             });
         }
+
+        // first load
+        filterBookings();
     });
 })();

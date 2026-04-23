@@ -10,29 +10,17 @@
 
 @section('content')
     @if(session('success'))
-        <div class="alert alert-success"
+        <div class="alert alert-success flash"
             style="background:#d1fae5;color:#065f46;padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;">
             {{ session('success') }}
         </div>
     @endif
     @if(session('error'))
-        <div class="alert alert-error"
+        <div class="alert alert-error flash"
             style="background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;">
             {{ session('error') }}
         </div>
     @endif
-
-    <div class="detail-card" style="margin-bottom:18px;" data-admin-events-base="{{ rtrim(url('/admin/events'), '/') }}">
-        <div class="detail-card-title">{{ $category->name }}</div>
-
-        <div class="detail-two-col" style="grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="detail-row">
-                <span class="detail-label">Events</span>
-                <span class="detail-val">{{ $events->count() }}</span>
-            </div>
-        </div>
-    </div>
-
     <form class="toolbar" onsubmit="return false;">
         <input id="eventSearch" class="toolbar-search" type="text" placeholder="Search event name...">
 
@@ -106,8 +94,11 @@
         </table>
     </div>
 
-    <div class="pagination-row">
-        <div class="page-info">Showing {{ $events->count() }} event(s)</div>
+    <div class="pagination-row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div class="page-info" id="pageInfo">Showing {{ $events->count() }} event(s)</div>
+
+        <div id="paginationControls" class="pagination-controls" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        </div>
     </div>
 
     <div class="modal-backdrop" id="delete-modal" style="display:none;">
@@ -135,4 +126,15 @@
 
 @section('scripts')
     <script src="{{ asset('js/admin-events.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var flashes = document.querySelectorAll('.flash');
+
+            flashes.forEach(function (flash) {
+                setTimeout(function () {
+                    flash.style.display = 'none';
+                }, 1500);
+            });
+        });
+</script>
 @endsection

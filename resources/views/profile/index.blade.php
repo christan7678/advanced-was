@@ -55,6 +55,7 @@
                 <span class="account-arrow">›</span>
             </a>
 
+            
             <a href="{{ route('profile.history') }}" class="account-menu-item">
                 <div>
                     <h3>Purchase History</h3>

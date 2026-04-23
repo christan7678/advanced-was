@@ -13,11 +13,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <a href="{{ route('bookings.show', $ticket->booking) }}"
-                        style="display: inline-block; padding: 10px 14px; background: #eff6ff; color: #1d4ed8; text-decoration: none; border-radius: 8px; font-weight: 600;">
-                        Booking Detail
-                    </a>
-                    <a href="{{ route('profile.tickets') }}"
+                    <a href="{{ url()->previous() }}"
                         style="display: inline-block; padding: 10px 14px; background: #f3f4f6; color: #374151; text-decoration: none; border-radius: 8px; font-weight: 600;">
                         Back
                     </a>

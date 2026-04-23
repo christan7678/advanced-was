@@ -63,6 +63,21 @@
 
             </div>
 
+            {{-- Phone --}}
+            <div class="auth-field">
+                <label for="phone" class="auth-label">{{ __('Phone number') }}</label>
+                <div class="auth-error">
+                    <input type="tel" name="phone" id="phone" class="auth-input @error('phone') is-invalid @enderror" placeholder="+60 12-345 6789" required autocomplete="phone" value="{{ old('phone') }}">
+                
+                    @error('phone')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                    @enderror
+
+                </div>
+            </div>
+
             {{-- Password --}}
             <div class="auth-field">
                 <label for="password" class="auth-label">{{ __('Password') }}</label>

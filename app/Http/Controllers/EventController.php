@@ -11,10 +11,10 @@ class EventController extends Controller
     public function __construct()
     {
         // index + show: both admin and user (authenticated)
-        $this->middleware('auth:admin,web')->only(['index', 'show']);
+        $this->middleware('auth')->only(['index', 'show']);
 
         // CRUD: admin only
-        $this->middleware('auth:admin')->except(['index', 'show']);
+        $this->middleware(['auth', 'role:admin,super_admin'])->except(['index', 'show']);
     }
 
     public function index()
@@ -74,7 +74,7 @@ class EventController extends Controller
 
     public function create()
     {
-        Gate::authorize('isAdmin');
+        Gate::authorize('administration');
 
         $categories = Category::all();
         return view('events.create', compact('categories'));
@@ -82,7 +82,7 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-        Gate::authorize('isAdmin');
+        Gate::authorize('administration');
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -120,7 +120,7 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
-        Gate::authorize('isAdmin');
+        Gate::authorize('administration');
 
         $categories = Category::all();
         return view('events.edit', compact('event', 'categories'));
@@ -128,7 +128,7 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event)
     {
-        Gate::authorize('isAdmin');
+        Gate::authorize('administration');
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -160,7 +160,7 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
-        Gate::authorize('isAdmin');
+        Gate::authorize('administration');
 
         $event->delete();
 

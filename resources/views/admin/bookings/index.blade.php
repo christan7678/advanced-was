@@ -64,15 +64,15 @@
     </div>
 
     <div class="stat-card">
-        <div class="stat-label">Completed</div>
-        <div class="stat-value">{{ $current['completed'] }}</div>
-        <div class="stat-note positive">Successful payments</div>
+        <div class="stat-label">Confirmed</div>
+        <div class="stat-value">{{ $current['confirmed'] }}</div>
+        <div class="stat-note positive">Confirmed bookings</div>
     </div>
 
     <div class="stat-card">
         <div class="stat-label">Pending</div>
         <div class="stat-value">{{ $current['pending'] }}</div>
-        <div class="stat-note muted">Awaiting payment</div>
+        <div class="stat-note muted">Awaiting confirmation</div>
     </div>
 
     <div class="stat-card">
@@ -88,7 +88,7 @@
     <select class="toolbar-select" name="status">
         <option value="" {{ $status === '' ? 'selected' : '' }}>All status</option>
         <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Pending</option>
-        <option value="completed" {{ $status === 'completed' ? 'selected' : '' }}>Completed</option>
+        <option value="confirmed" {{ $status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
         <option value="cancelled" {{ $status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
     </select>
 </form>
@@ -98,6 +98,7 @@
         <thead>
             <tr>
                 <th>Booking ID</th>
+                <th>Booking Code</th>
                 <th>User</th>
                 <th>Email</th>
                 <th>Tickets</th>
@@ -113,10 +114,11 @@
                 @php
                     $event = $booking->event;
                     $user = $booking->user;
-                    $statusVal = $booking->payment_status ?: 'pending';
+                    $statusVal = $booking->booking_status ?: 'pending';
                 @endphp
+
                 <tr>
-                    <td>#{{ $booking->id }}</td>
+                    <td>{{ $booking->id }}</td>
                     <td>{{ $booking->booking_code }}</td>
                     <td><div class="td-title">{{ $user->name ?? '—' }}</div></td>
                     <td class="td-sub">{{ $user->email ?? '—' }}</td>
@@ -127,25 +129,49 @@
                         <span class="badge badge-{{ $statusVal }}">{{ ucfirst($statusVal) }}</span>
                     </td>
                     <td>
-                        <a href="{{ route('admin.bookings.show', $booking) }}" class="act-btn act-view">View</a>
+                        <a href="{{ route('admin.bookings.show', $booking->id) }}" class="act-btn act-view">View</a>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="td-empty">No bookings found.</td>
+                    <td colspan="9" class="td-empty">No bookings found.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 </div>
 
-<div style="margin-top:14px;">
-    {{ $bookings->links() }}
-</div>
+<div class="pagination-row">
+    <div class="page-info">
+        Showing {{ $bookings->firstItem() }} to {{ $bookings->lastItem() }} of {{ $bookings->total() }} account(s)
+    </div>
 
-<style>
-    .w-5{display: none}
-</style>
+    <div class="pagination-controls">
+        {{-- Previous --}}
+        <a href="{{ $bookings->previousPageUrl() }}"
+           class="pagination-btn {{ $bookings->onFirstPage() ? 'disabled' : '' }}">
+            Prev
+        </a>
+
+        {{-- Page Numbers --}}
+        @for ($i = 1; $i <= $bookings->lastPage(); $i++)
+            @if ($i == 1 || $i == $bookings->lastPage() || abs($i - $bookings->currentPage()) <= 1)
+                <a href="{{ $bookings->url($i) }}"
+                   class="pagination-btn {{ $bookings->currentPage() == $i ? 'active' : '' }}">
+                    {{ $i }}
+                </a>
+            @elseif ($i == 2 || $i == $bookings->lastPage() - 1)
+                <span class="pagination-ellipsis">...</span>
+            @endif
+        @endfor
+
+        {{-- Next --}}
+        <a href="{{ $bookings->nextPageUrl() }}"
+           class="pagination-btn {{ !$bookings->hasMorePages() ? 'disabled' : '' }}">
+            Next
+        </a>
+    </div>
+</div>
 
 @endsection
 

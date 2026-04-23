@@ -4,11 +4,11 @@
 @section('page-title', 'Event detail')
 
 @section('topbar-actions')
-    <a href="{{ route('admin.events.edit', $event) }}" class="btn-primary">Edit</a>
     @if($event->category_id)
-        <a href="{{ route('admin.events.category', $event->category_id) }}" class="btn-outline-sm">Category</a>
-    @endif
+        <a href="{{ url()->previous() }}" class="btn-outline-sm">← Back</a>
+    @endif    
     <a href="{{ route('admin.events.index') }}" class="btn-outline-sm">All categories</a>
+    <a href="{{ route('admin.events.edit', $event) }}" class="btn-primary">Edit</a>
 @endsection
 
 @section('content')

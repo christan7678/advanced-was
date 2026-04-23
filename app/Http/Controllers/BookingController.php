@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
@@ -12,8 +13,7 @@ class BookingController extends Controller
 {
     public function __construct()
     {
-        // admin or user must be logged in
-        $this->middleware('auth:admin,web');
+        $this->middleware('auth');
     }
 
     /**
@@ -22,12 +22,36 @@ class BookingController extends Controller
      */
     public function index()
     {
-        if (Gate::allows('isAdmin')) {
-            $bookings = Booking::with(['user', 'event'])->latest()->get();
+        if (Gate::allows('administration')) {
+            $bookings = Booking::with(['user', 'event'])
+                ->leftJoin('events', 'bookings.event_id', '=', 'events.id')
+                ->orderByRaw("
+                    CASE 
+                        WHEN bookings.payment_status = 'completed' THEN 0
+                        WHEN bookings.payment_status = 'pending' THEN 1
+                        WHEN bookings.payment_status = 'refunded' THEN 2
+                        WHEN bookings.payment_status = 'cancelled' THEN 3
+                        ELSE 4
+                    END
+                ")
+                ->orderBy('events.date', 'asc')
+                ->select('bookings.*')
+                ->get();
         } else {
             $bookings = Booking::with('event')
-                ->where('user_id', auth('web')->id())
-                ->latest()
+                ->where('user_id', auth()->id())
+                ->leftJoin('events', 'bookings.event_id', '=', 'events.id')
+                ->orderByRaw("
+                    CASE 
+                        WHEN bookings.payment_status = 'completed' THEN 0
+                        WHEN bookings.payment_status = 'pending' THEN 1
+                        WHEN bookings.payment_status = 'refunded' THEN 2
+                        WHEN bookings.payment_status = 'cancelled' THEN 3
+                        ELSE 4
+                    END
+                ")
+                ->orderBy('events.date', 'asc')
+                ->select('bookings.*')
                 ->get();
         }
 
@@ -36,21 +60,35 @@ class BookingController extends Controller
 
     /**
      * Show booking detail
-     * Admin: any booking / User: only own booking
      */
     public function show(Booking $booking)
     {
-        if (!Gate::allows('isAdmin') && $booking->user_id !== auth()->id()) {
-            return redirect()->route('bookings.index')->with('error', 'You do not have permission to view this booking.');
+        $this->authorize('view', $booking);
+
+        if (
+            $booking->payment_status === 'pending' &&
+            $booking->expires_at &&
+            $booking->expires_at->lt(now())
+        ) {
+            $booking->update([
+                'payment_status' => 'cancelled',
+                'booking_status' => 'cancelled',
+            ]);
+
+            if ($booking->event) {
+                $booking->event->increment('available_seats', $booking->number_of_seats);
+            }
         }
 
         $booking->load(['user', 'event', 'ticket']);
-        return view('bookings.show', compact('booking'));
+
+        $from = request()->query('from');
+        return view('bookings.show', compact('booking','from'));
     }
 
     public function create(Request $request)
     {
-        if (!auth('web')->check()) {
+        if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'Please login to make a booking.');
         }
 
@@ -69,7 +107,7 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth('web')->check()) {
+        if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'Only users can make bookings.');
         }
 
@@ -79,12 +117,12 @@ class BookingController extends Controller
             'total_amount' => 'required|numeric|min:0',
         ]);
 
-        $userId = auth('web')->id();
+        $userId = auth()->id();
         $numberOfSeats = (int) $request->number_of_seats;
         $submittedTotal = (float) $request->total_amount;
         $bookingCode = 'BK' . strtoupper(uniqid());
 
-        DB::transaction(function () use ($request, $userId, $numberOfSeats, $submittedTotal, $bookingCode) {
+        $booking = DB::transaction(function () use ($request, $userId, $numberOfSeats, $submittedTotal, $bookingCode) {
             $event = Event::whereKey($request->event_id)->lockForUpdate()->firstOrFail();
 
             if ($numberOfSeats > $event->available_seats) {
@@ -100,6 +138,7 @@ class BookingController extends Controller
             }
 
             $expectedTotal = (float) $event->price * $numberOfSeats;
+
             if (abs($expectedTotal - $submittedTotal) > 0.01) {
                 throw ValidationException::withMessages([
                     'total_amount' => 'Invalid total amount. Please try again.',
@@ -111,78 +150,25 @@ class BookingController extends Controller
                 'user_id' => $userId,
                 'event_id' => $event->id,
                 'number_of_seats' => $numberOfSeats,
-                'total_amount' => $submittedTotal,
+                'total_amount' => $expectedTotal,
                 'payment_status' => 'pending',
+                'booking_status' => 'pending',
+                'booked_at' => now(),
+                'expires_at' => now()->addMinutes(15),
             ]);
 
-            $qrCodePaths = [
-                'storage/qrs/qr1.jpg',
-                'storage/qrs/qr2.jpg',
-                'storage/qrs/qr3.jpg',
-            ];
-            $qrCodePath = $qrCodePaths[($booking->id - 1) % count($qrCodePaths)];
-
-            $booking->ticket()->create([
-                'user_id' => $userId,
-                'event_id' => $event->id,
-                'ticket_code' => 'TK' . $booking->id,
-                'qr_code_path' => $qrCodePath,
-            ]);
             $event->decrement('available_seats', $numberOfSeats);
+
+            return $booking;
         });
 
-        return redirect()->route('bookings.index')
-            ->with('success', 'Booking confirmed! Your booking code is ' . $bookingCode);
+        return redirect()->route('payment.show', $booking)
+            ->with('success', 'Booking created. Please complete payment within 15 minutes.');
     }
 
-    /**
-     * Admin: edit any booking status
-     */
-    public function edit(Booking $booking)
-    {
-        Gate::authorize('isAdmin');
-        $booking->load(['user', 'event']);
-        return view('bookings.edit', compact('booking'));
-    }
-
-    /**
-     * Admin: update booking status
-     */
-    public function update(Request $request, Booking $booking)
-    {
-        Gate::authorize('isAdmin');
-
-        $request->validate([
-            'payment_status' => 'required|in:pending,completed,cancelled',
-        ]);
-
-        $oldStatus = $booking->payment_status;
-        $newStatus = $request->payment_status;
-        $booking->update(['payment_status' => $newStatus]);
-
-        if ($oldStatus !== 'cancelled' && $newStatus === 'cancelled') {
-            // Restore seats if booking is cancelled
-            $booking->event->increment('available_seats', $booking->number_of_seats);
-        } elseif ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
-            // Decrease seats if booking is reactivated
-            if ($booking->number_of_seats > $booking->event->available_seats) {
-                return back()->withErrors(['payment_status' => 'Not enough available seats to reactivate this booking.']);
-            }
-            $booking->event->decrement('available_seats', $booking->number_of_seats);
-        }
-
-        return redirect()->route('bookings.index')
-            ->with('success', "Booking status updated from $oldStatus to $newStatus.");
-    }
-
-    /**
-     * User: cancel own booking / Admin: delete any booking
-     */
     public function destroy(Booking $booking)
     {
-        if ( $booking->user_id !== auth()->id()) {
-            return redirect()->route('bookings.index')->with('error', 'You do not have permission to cancel this booking.');
-        }
+        $this->authorize('delete', $booking);
 
         $booking->loadMissing('event');
 
@@ -192,15 +178,79 @@ class BookingController extends Controller
         }
 
         DB::transaction(function () use ($booking) {
-            if ($booking->payment_status !== 'cancelled' && $booking->event) {
-                $booking->event->increment('available_seats', $booking->number_of_seats);
+            if ($booking->booking_status === 'cancelled') {
+                return;
             }
 
-            $booking->tickets()->delete();
-            $booking->delete();
+            $booking->loadMissing(['event', 'payment']);
+
+            if ($booking->event) {
+                $event = $booking->event;
+
+                if (!in_array($booking->payment_status, ['cancelled', 'refunded'])) {
+                    $event->increment('available_seats', $booking->number_of_seats);
+                    $event->refresh();
+                }
+
+                if ($event->available_seats > 0 && $event->date && $event->date->gte(today())) {
+                    $event->status = 'active';
+                    $event->save();
+                }
+            }
+
+            $newPaymentStatus = $booking->payment_status === 'completed'
+                ? 'refunded'
+                : 'cancelled';
+
+            $booking->update([
+                'booking_status' => 'cancelled',
+                'payment_status' => $newPaymentStatus,
+                'cancelled_at' => now(),
+            ]);
+
+
+            if ($booking->payment) {
+                $booking->payment->update([
+                    'status' => $newPaymentStatus,
+                ]);
+            }
         });
 
-        return redirect()->route('bookings.index')
-            ->with('success', 'Booking cancelled!');
+        $message = $booking->payment_status === 'completed'
+            ? 'Booking cancelled successfully. Refund will be processed within 7 working days.'
+            : 'Booking cancelled successfully!';
+
+        return redirect()->route('bookings.index', ['tab' => 'cancelled'])
+            ->with('success', $message);
+    }
+
+    public function afterBooking(Booking $booking)
+    {
+        $this->authorize('view', $booking);
+
+        $booking->loadMissing('event');
+
+        return view('bookings.afterBooking', compact('booking'));
+    }
+
+    /**
+     * Admin-only helper pages if you still use them
+     */
+    public function adminIndex()
+    {
+        Gate::authorize('administration');
+
+        $bookings = Booking::with(['user', 'event'])->latest()->get();
+
+        return view('admin.bookings.index', compact('bookings'));
+    }
+
+    public function adminShow(Booking $booking)
+    {
+        Gate::authorize('administration');
+
+        $booking->load(['user', 'event', 'ticket']);
+
+        return view('admin.bookings.show', compact('booking'));
     }
 }

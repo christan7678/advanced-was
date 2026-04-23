@@ -11,10 +11,95 @@ class Booking extends Model
         'booking_code',
         'user_id',
         'event_id',
-        'total_amount',
         'number_of_seats',
+        'total_amount',
         'payment_status',
+        'booking_status',
+        'paid_at',
+        'cancelled_at',
+        'expires_at',
     ];
+
+    protected $casts = [
+        'paid_at' => 'datetime',
+        'cancelled_at' => 'datetime',
+        'expires_at' => 'datetime',
+    ];
+
+    public function isPaymentExpired()
+    {
+        if ($this->payment_status !== 'pending') {
+            return false;
+        }
+
+        if ($this->booking_status === 'cancelled') {
+            return false;
+        }
+
+        if ($this->expires_at) {
+            return $this->expires_at->lt(now());
+        }
+
+        return $this->created_at
+            && $this->created_at->copy()->addMinutes(15)->lt(now());
+    }
+
+    public function expirePaymentIfNeeded()
+    {
+        if (!$this->isPaymentExpired()) {
+            return;
+        }
+
+        $this->loadMissing('event');
+
+        if ($this->event) {
+            $this->event->increment('available_seats', $this->number_of_seats);
+
+            $this->event->refresh();
+
+            if ($this->event->available_seats > 0 && $this->event->date && $this->event->date->gte(today())) {
+                $this->event->status = 'active';
+                $this->event->save();
+            }
+        }
+
+        $this->payment_status = 'cancelled';
+        $this->booking_status = 'cancelled';
+        $this->cancelled_at = now();
+        $this->save();
+    }
+
+
+
+    public function cancelWithRefundIfNeeded()
+    {
+        if ($this->booking_status === 'cancelled') {
+            return;
+        }
+
+        if ($this->event) {
+            $this->event->increment('available_seats', $this->number_of_seats);
+        }
+
+        $this->booking_status = 'cancelled';
+
+        if (in_array($this->payment_status, ['completed'])) {
+            $this->payment_status = 'refunded';
+        } else {
+            $this->payment_status = 'cancelled';
+        }
+
+        $this->save();
+
+        $this->loadMissing('ticket');
+
+        if ($this->ticket) {
+            $this->ticket->update([
+                'status' => 'cancelled',
+            ]);
+        }
+    }
+
 
     public function user()
     {
@@ -24,6 +109,12 @@ class Booking extends Model
     public function event()
     {
         return $this->belongsTo(Event::class);
+        
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
     }
 
     public function ticket()

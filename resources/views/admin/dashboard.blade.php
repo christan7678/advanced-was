@@ -120,7 +120,7 @@
 
         {{-- Recent Activity --}}
         <div class="dash-card">
-            <div class="dash-card-title">Recent Activity</div>
+            <div class="dash-card-title">Recent User Activity</div>
             @foreach($recentActivities as $activity)
                 <div class="recent-row">
                     <div class="rec-dot status-{{ $activity->payment_status }}"></div>
@@ -149,7 +149,7 @@
 
     {{-- Row 4 --}}
     <div class="dash-card">
-        <div class="dash-card-title">Top Performing Events</div>
+        <div class="dash-card-title">Top 3 Performing Events</div>
 
         <div class="table-wrap dashboard-table-wrap">
             <table>
@@ -160,7 +160,6 @@
                         <th>Venue</th>
                         <th>Purchases</th>
                         <th>Revenue</th>
-                        <th>Payment Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -172,12 +171,6 @@
                                 'cancelled' => $event->cancelled_count,
                             ];
                             $dominant = array_keys($statuses, max($statuses))[0];
-
-                            $badgeMap = [
-                                'completed' => ['class' => 'badge-completed', 'text' => 'Most Completed'],
-                                'pending' => ['class' => 'badge-pending', 'text' => 'High Pending'],
-                                'cancelled' => ['class' => 'badge-cancelled', 'text' => 'Some Cancelled'],
-                            ];
                         @endphp
                         <tr>
                             <td>
@@ -188,11 +181,7 @@
                             <td>{{ $event->venue }}</td>
                             <td>{{ $event->total_purchases }}</td>
                             <td>RM {{ number_format($event->total_revenue * $event->price, 2) }}</td>
-                            <td>
-                                <span class="badge {{ $badgeMap[$dominant]['class'] }}">
-                                    {{ $badgeMap[$dominant]['text'] }}
-                                </span>
-                            </td>
+
                         </tr>
                     @empty
                         <tr>

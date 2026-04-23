@@ -99,7 +99,7 @@
                             onmouseover="this.style.background='#047857'"
                             onmouseout="this.style.background='#059669'"
                         >
-                            🔒 Update Password
+                            Update Password
                         </button>
                     </form>
 

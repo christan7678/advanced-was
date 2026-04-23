@@ -27,7 +27,7 @@
 
             <div class="detail-row">
                 <span class="detail-label">Status</span>
-                @php $statusVal = $booking->payment_status ?: 'pending'; @endphp
+                @php $statusVal = $booking->booking_status ?: 'pending'; @endphp
                 <span class="badge badge-{{ $statusVal }}">{{ ucfirst($statusVal) }}</span>
             </div>
 
@@ -50,6 +50,45 @@
                 <span class="detail-val">{{ $booking->created_at ? $booking->created_at->format('d M Y') : '—' }}</span>
             </div>
         </div>
+        <div class="detail-card">
+            <div class="detail-card-title">Payment</div>
+
+            <div class="detail-row">
+                <span class="detail-label">Payment Code</span>
+                <span class="detail-val">{{ $booking->payment->payment_code ?? '—' }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Payment Method</span>
+                <span class="detail-val">{{ $booking->payment->payment_method ?? '—' }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Payment Status</span>
+                <span class="detail-val">
+                    @php
+                        $paymentStatus = $booking->payment_status ?? 'unknown';
+                    @endphp
+                    <span class="badge badge-{{ $paymentStatus }}">
+                        {{ ucfirst($paymentStatus) }}
+                    </span>
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Amount</span>
+                <span class="detail-val">
+                    RM {{ number_format((float) ($booking->payment->amount ?? $booking->total_amount ?? 0), 2) }}
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Paid At</span>
+                <span class="detail-val">
+                    {{ optional(optional($booking->payment)->paid_at)->format('d M Y H:i') ?? '—' }}
+                </span>
+            </div>
+        </div>
 
         <div class="detail-card">
             <div class="detail-card-title">User</div>
@@ -67,7 +106,7 @@
                 </div>
             </div>
 
-            <a href="{{ route('admin.users.index') }}" class="btn-outline-sm">
+            <a  href="{{ route('admin.users.show',  $booking->user->id) }}" class="btn-outline-sm">
                 View user profile
             </a>
         </div>
@@ -115,16 +154,26 @@
             </p>
 
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                @if(($booking->payment_status ?: 'pending') !== 'cancelled')
-                    <button type="button" class="btn-warning" onclick="openCancelModal({{ $booking->id }}, @json($booking->user->name ?? ''))">Cancel Booking</button>
-                @endif
-                <button type="button" class="btn-danger" onclick="openDeleteModal({{ $booking->id }}, @json($booking->user->name ?? ''))">Delete Booking</button>
-            </div>
+            @if(($booking->booking_status ?? 'pending') !== 'cancelled')
+                <button type="button"
+                    class="btn-warning"
+                    onclick='openCancelModal({{ $booking->id }}, @json($booking->user->name ?? ""))'>
+                    Cancel Booking
+                </button>
+            @endif
+
+            <button type="button"
+                class="btn-danger"
+                onclick='openDeleteModal({{ $booking->id }}, @json($booking->user->name ?? ""))'>
+                Delete Booking
+            </button>
+
         </div>
     </div>
 
 </div>
 
+{{-- Cancel Modal --}}
 <div class="modal-backdrop" id="cancel-modal" style="display:none;">
     <div class="modal modal-sm">
         <div class="modal-icon-warning">
@@ -146,6 +195,7 @@
     </div>
 </div>
 
+{{-- Delete Modal --}}
 <div class="modal-backdrop" id="delete-modal" style="display:none;">
     <div class="modal modal-sm">
         <div class="modal-icon-danger">

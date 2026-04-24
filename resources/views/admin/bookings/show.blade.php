@@ -162,12 +162,12 @@
                 </button>
             @endif
 
-            <button type="button"
-                class="btn-danger"
-                onclick='openDeleteModal({{ $booking->id }}, @json($booking->user->name ?? ""))'>
-                Delete Booking
-            </button>
-
+                <button type="button"
+                    class="btn-danger"
+                    onclick='openDeleteModal({{ $booking->id }}, @json($booking->user->name ?? ""))'>
+                    Delete Booking
+                </button>
+            </div>
         </div>
     </div>
 

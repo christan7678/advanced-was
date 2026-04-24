@@ -1,32 +1,33 @@
 @extends('layouts.app')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/profile/profile-detail.css') }}">
+@endsection
+
 @section('content')
-<div class="account-page">
+<div class="profile-detail-page">
 
-    <section class="account-section">
+    <section class="profile-detail-section">
 
-        <div class="account-back">
-            <a href="/profile" onclick="if(history.length > 1){ history.back(); return false; }" class="back-btn">
-                🡰 Back
+        <div class="profile-detail-header">
+            <div>
+                <div class="profile-detail-label">Support</div>
+                <h1>Support Center</h1>
+                <p>We’re here to help you</p>
+            </div>
+
+            <a href="{{ url()->previous() }}" class="profile-detail-back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                     fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
             </a>
         </div>
-        
-        <div class="account-section-label">Support Center</div>
 
-        <div class="account-menu" style="padding:10px 6px;">
-            <div style="max-width:700px;">
-
-            <h2>Support Center</h2>
-
-            <p>
-            Need help? Our support team is available to assist you with booking issues,
-            payment problems, and account inquiries.
-            </p>
-
-            <p>Email: support@eventbook.com</p>
-            <p>Response time: within 24 hours</p>
-
-            </div>
+        <div class="profile-info-card text-block">
+            Need help? Contact our support team for booking or payment issues.<br><br>
+            Email: support@eventbook.com<br>
+            Response time: within 24 hours
         </div>
 
     </section>

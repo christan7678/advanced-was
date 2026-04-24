@@ -138,7 +138,7 @@
                         <input id="password-field" name="password" class="form-input" type="password" placeholder="Enter password" required>
                     </div>
 
-                    <div class="form-group form-full">
+                    <div class="form-group form-full" >
                         <label>Confirm Password <span id="password-confirm-required" style="color: red;">*</span></label>
                         <input id="password-confirmation-field" name="password_confirmation" class="form-input" type="password" placeholder="Confirm password" required>
                     </div>

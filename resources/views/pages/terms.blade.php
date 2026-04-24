@@ -1,30 +1,33 @@
 @extends('layouts.app')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/profile/profile-detail.css') }}">
+@endsection
+
 @section('content')
-<div class="account-page">
+<div class="profile-detail-page">
 
-    <section class="account-section">
+    <section class="profile-detail-section">
 
-        <div class="account-back">
-            <a href="/profile" onclick="if(history.length > 1){ history.back(); return false; }" class="back-btn">
-                🡰 Back
+        <div class="profile-detail-header">
+            <div>
+                <div class="profile-detail-label">Terms</div>
+                <h1>Terms of Service</h1>
+                <p>Rules and responsibilities when using EventBook</p>
+            </div>
+
+            <a href="{{ url()->previous() }}" class="profile-detail-back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                     fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
             </a>
         </div>
-        
-        <div class="account-section-label">Terms of Service</div>
 
-        <div class="account-menu" style="padding:10px 6px;">
-            <div style="max-width:700px;">
-
-                <h2>Terms of Use</h2>
-
-                <p>
-                By using EventBook, you agree to comply with all applicable laws and regulations.
-                Users are responsible for maintaining account security and ensuring accurate booking details.
-                EventBook reserves the right to modify or cancel bookings when necessary.
-                </p>
-
-            </div>
+        <div class="profile-info-card text-block">
+            By using EventBook, you agree to comply with applicable laws.<br><br>
+            You are responsible for your account security and booking accuracy.<br><br>
+            EventBook may modify or cancel bookings when necessary.
         </div>
 
     </section>

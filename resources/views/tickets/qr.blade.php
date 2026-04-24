@@ -1,58 +1,68 @@
 @extends('layouts.app')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/ticket.css') }}?v={{ time() }}">
+@endsection
+
 @section('content')
-    <div style="max-width: 720px; margin: 40px auto; padding: 20px;">
-        <div
-            style="background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 28px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);">
-            <div style="display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 24px;">
-                <div>
-                    <div style="font-size: 28px; font-weight: 700; color: #111827;">Ticket QR</div>
-                    <div style="font-size: 14px; color: #6b7280; margin-top: 6px;">
-                        {{ $ticket->booking->event->name ?? 'Event' }}
-                    </div>
+<div class="ticket-page">
+    <div class="ticket-card">
+
+        <div class="ticket-header">
+            <div>
+                <div class="ticket-label">Digital Ticket</div>
+                <h1>Ticket QR</h1>
+                <p>{{ $ticket->booking->event->name ?? 'Event' }}</p>
+            </div>
+
+            <a href="{{ url()->previous() }}" class="ticket-back-btn-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </a>
+        </div>
+
+        <div class="ticket-body">
+            <div class="ticket-qr-panel">
+                <div class="ticket-qr-box">
+                    <img src="{{ asset($ticket->qr_code_path ?? 'storage/qrs/qr1.jpg') }}" alt="Ticket QR code">
                 </div>
 
-                <div style="display: flex; gap: 10px;">
-                    <a href="{{ url()->previous() }}"
-                        style="display: inline-block; padding: 10px 14px; background: #f3f4f6; color: #374151; text-decoration: none; border-radius: 8px; font-weight: 600;">
-                        Back
-                    </a>
+                <div class="ticket-qr-note">
+                    Scan this QR code at the event entrance.
                 </div>
             </div>
 
-            <div
-                style="display: grid; grid-template-columns: minmax(240px, 280px) 1fr; gap: 24px; align-items: center;">
-                <div
-                    style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 16px; padding: 18px; text-align: center;">
-                    <img src="{{ asset($ticket->qr_code_path) }}" alt="Ticket QR code"
-                        style="width: 100%; max-width: 240px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px;">
+            <div class="ticket-info-panel">
+                <div class="ticket-info-item">
+                    <span>Ticket Code</span>
+                    <strong>{{ $ticket->ticket_code }}</strong>
                 </div>
 
-                <div style="display: grid; gap: 12px;">
-                    <div style="font-size: 14px; color: #6b7280;">Ticket Code</div>
-                    <div style="font-size: 20px; font-weight: 700; color: #111827;">{{ $ticket->ticket_code }}</div>
+                <div class="ticket-info-item">
+                    <span>Booking Code</span>
+                    <strong>{{ $ticket->booking->booking_code ?? 'N/A' }}</strong>
+                </div>
 
-                    <div style="font-size: 14px; color: #6b7280; margin-top: 8px;">Booking Code</div>
-                    <div style="font-size: 16px; font-weight: 600; color: #1f2937;">
-                        {{ $ticket->booking->booking_code ?? 'N/A' }}
-                    </div>
+                <div class="ticket-info-item">
+                    <span>Event</span>
+                    <strong>{{ $ticket->booking->event->name ?? 'N/A' }}</strong>
+                </div>
 
-                    <div style="font-size: 14px; color: #6b7280; margin-top: 8px;">Event</div>
-                    <div style="font-size: 16px; font-weight: 600; color: #1f2937;">
-                        {{ $ticket->booking->event->name ?? 'N/A' }}
-                    </div>
+                <div class="ticket-info-item">
+                    <span>Seats</span>
+                    <strong>{{ $ticket->booking->number_of_seats ?? 1 }}</strong>
+                </div>
 
-                    <div style="font-size: 14px; color: #6b7280; margin-top: 8px;">Seats</div>
-                    <div style="font-size: 16px; font-weight: 600; color: #1f2937;">
-                        {{ $ticket->booking->number_of_seats ?? 1 }}
-                    </div>
-
-                    <div style="font-size: 14px; color: #6b7280; margin-top: 8px;">Status</div>
-                    <div style="font-size: 16px; font-weight: 600; color: #1f2937;">
+                <div class="ticket-info-item">
+                    <span>Status</span>
+                    <strong class="ticket-status">
                         {{ ucfirst($ticket->booking->payment_status ?? 'unknown') }}
-                    </div>
+                    </strong>
                 </div>
             </div>
         </div>
+
     </div>
+</div>
 @endsection

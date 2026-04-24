@@ -11,6 +11,7 @@ class EventController extends Controller
 {
     public function __construct()
     {
+        $this->middleware(['auth', 'role:user'])->only(['index', 'show']);
 
         // CRUD: admin only
         $this->middleware(['auth', 'role:admin,super_admin'])->except(['index', 'show']);

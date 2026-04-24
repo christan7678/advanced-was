@@ -1,37 +1,42 @@
 @extends('layouts.app')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/profile/profile-detail.css') }}?v={{ time() }}">
+@endsection
+
 @section('content')
-<div class="account-page">
+<div class="profile-detail-page">
+    <section class="profile-detail-section">
 
-    <section class="account-section">
-
-        <div class="account-back">
-            <a href="/profile" onclick="if(history.length > 1){ history.back(); return false; }" class="back-btn">
-                🡰 Back
-            </a>
-        </div>
-        
-        <div class="account-section-label">Account Information</div>
-
-        <div class="account-menu" style="padding:10px 6px;">
-            <div style="max-width:700px;">
-
-            <h2>Account Information</h2>
-
-            <div style="display:flex; align-items:center; gap:14px; margin:14px 0;">
-                <div class="account-avatar">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-                </div>
-                <div>
-                    <div style="font-size:18px; font-weight:700; color:#111827;">{{ Auth::user()->name ?? 'User Name' }}</div>
-                    <div style="font-size:14px; color:#6b7280;">{{ Auth::user()->email ?? 'Email' }}</div>
-                </div>
+        <div class="profile-detail-header">
+            <div>
+                <div class="profile-detail-label">Account Information</div>
+                <h1>Account Information</h1>
+                <p>View your personal account details.</p>
             </div>
 
+            <a href="{{ url()->previous() }}" class="profile-detail-back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                     fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </a>
+        </div>
+
+        <div class="profile-info-card">
+            <div class="profile-avatar">
+                {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+            </div>
+
+            <div class="profile-info-content">
+                <div class="profile-info-label">Full Name</div>
+                <div class="profile-info-value">{{ Auth::user()->name ?? 'User Name' }}</div>
+
+                <div class="profile-info-label">Email Address</div>
+                <div class="profile-info-value muted">{{ Auth::user()->email ?? 'Email' }}</div>
             </div>
         </div>
 
     </section>
-
 </div>
 @endsection

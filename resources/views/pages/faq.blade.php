@@ -1,33 +1,44 @@
 @extends('layouts.app')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/profile/profile-detail.css') }}">
+@endsection
+
 @section('content')
-<div class="account-page">
+<div class="profile-detail-page">
 
-    <section class="account-section">
+    <section class="profile-detail-section">
 
-        <div class="account-back">
-            <a href="/profile" onclick="if(history.length > 1){ history.back(); return false; }" class="back-btn">
-                🡰 Back
+        <div class="profile-detail-header">
+            <div>
+                <div class="profile-detail-label">FAQ</div>
+                <h1>Frequently Asked Questions</h1>
+                <p>Quick answers to common questions</p>
+            </div>
+
+            <a href="{{ url()->previous() }}" class="profile-detail-back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                     fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
             </a>
         </div>
 
-        <div class="account-section-label">Frequently Asked Questions</div>
+        <div class="profile-info-card text-block">
 
-        <div class="account-menu" style="padding:10px 6px;">
-            <div style="max-width:700px;">
+            <p><strong>How do I book a ticket?</strong><br>
+            Select event → choose seats → proceed payment.</p>
 
-            <h2>Frequently Asked Questions</h2>
+            <br>
 
-            <p><strong>Q: How do I book a ticket?</strong><br>
-            A: Select an event, choose a date, and proceed to payment.</p>
+            <p><strong>Can I cancel booking?</strong><br>
+            Yes, depending on event policy.</p>
 
-            <p><strong>Q: Can I cancel my booking?</strong><br>
-            A: Yes, depending on the event policy.</p>
+            <br>
 
-            <p><strong>Q: How do I contact support?</strong><br>
-            A: Use the Support Center page.</p>
+            <p><strong>How to contact support?</strong><br>
+            Use the Support page.</p>
 
-            </div>
         </div>
 
     </section>

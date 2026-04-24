@@ -60,13 +60,6 @@
                             @auth
                                 <p class="profile-mega-label">My Account</p>
 
-                                <div class="profile-user-card">
-                                    <div class="profile-user-info">
-                                        <div class="profile-user-name">{{ Auth::user()->name }}</div>
-                                        <div class="profile-user-email">{{ Auth::user()->email }}</div>
-                                    </div>
-                                </div>
-
                                 <div class="profile-dropdown-links">
                                     <a class="profile-mega-item" href="{{ route('profile.index') }}">
                                         <div class="profile-mega-icon">
@@ -97,7 +90,7 @@
                                 <div class="profile-dropdown-divider"></div>
 
                                 
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Are you sure you want to sign out?')">
                                     @csrf
                                     <button type="submit" class="profile-mega-item" style="width:100%; text-align:left;">
                                         <span class="profile-mega-icon">
@@ -124,6 +117,7 @@
  
                     <div class="profile-mega-inner">
                         <div class="profile-mega-col">
+                            @auth
                             <p class="profile-mega-label">Navigation</p>
  
                             <a class="profile-mega-item {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
@@ -157,6 +151,7 @@
                                 <div class="profile-mega-item-title">Profile</div>
                                 <svg class="profile-mega-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                             </a>
+                            @endauth
  
                             <p class="profile-mega-label" style="border-top: 1px solid #f1f3f5; padding-top: 14px; margin-top: 6px;">Account</p>
 
@@ -179,7 +174,7 @@
                             @endguest
 
                             @auth
-                            <form method="POST" action="{{ route('logout') }}">
+                            <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Are you sure you want to sign out?')">
                                 @csrf
                                 <button type="submit" class="profile-mega-item" style="width:100%; text-align:left;">
                                     <span class="profile-mega-icon">

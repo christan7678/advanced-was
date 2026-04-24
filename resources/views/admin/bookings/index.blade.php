@@ -2,8 +2,18 @@
 
 @section('title', 'Bookings')
 @section('page-title', 'Bookings')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/admin-dashboard.css') }}">
+@endpush
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/admin-bookings.css') }}">
+@endpush
 
 @section('topbar-actions')
+    @if(request()->has('event_id'))
+        <a href="{{ url()->previous() }}" class="btn-outline-sm">← Back</a>
+    @endif
+
     <span class="topbar-date">{{ $bookings->total() }} total bookings</span>
 @endsection
 
@@ -56,7 +66,7 @@
     </div>
 </div>
 
-<div class="stat-grid" style="margin-bottom:18px;">
+<div class="bookings-stat-grid">
     <div class="stat-card">
         <div class="stat-label">Total Bookings</div>
         <div class="stat-value">{{ $current['total_bookings'] }}</div>

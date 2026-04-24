@@ -4,7 +4,7 @@
 @section('page-title', $category->name)
 
 @section('topbar-actions')
-    <a href="{{ route('admin.events.index') }}" class="btn-outline-sm">← All categories</a>
+    <a href="{{ url()->previous() }}" class="btn-outline-sm">← Back</a>
     <a href="{{ route('admin.events.create', ['category_id' => $category->id]) }}" class="btn-primary">+ Create event</a>
 @endsection
 
@@ -21,6 +21,47 @@
             {{ session('error') }}
         </div>
     @endif
+
+    @php
+        $colors = ['#16a34a', '#2563eb', '#d97706', '#dc2626', '#7c3aed', '#0891b2'];
+
+        $gradientParts = [];
+
+        foreach ($eventChartData as $index => $item) {
+            $color = $colors[$index % count($colors)];
+            $gradientParts[] = $color . ' ' . $item['start'] . '% ' . $item['end'] . '%';
+        }
+
+        $gradient = count($gradientParts)
+            ? implode(', ', $gradientParts)
+            : '#e5e7eb 0% 100%';
+    @endphp
+
+    <div class="dash-card" style="margin-bottom:18px;">
+        <div class="dash-card-title">{{ $category->name }} Ticket Distribution</div>
+
+        <div class="status-chart-wrap">
+            <div class="status-donut" style="background: conic-gradient({{ $gradient }});">
+                <div class="status-donut-center">
+                    <div class="status-donut-total">{{ $totalSold }}</div>
+                    <div class="status-donut-sub">Tickets Sold</div>
+                </div>
+            </div>
+
+            <div class="status-legend">
+                @foreach($eventChartData as $index => $item)
+                    <div class="legend-row">
+                        <span class="legend-dot"
+                            style="background: {{ $colors[$index % count($colors)] }};"></span>
+                        <span class="legend-label">{{ $item['name'] }}</span>
+                        <span class="legend-value">{{ $item['percent'] }}%</span>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+
     <form class="toolbar" onsubmit="return false;">
         <input id="eventSearch" class="toolbar-search" type="text" placeholder="Search event name...">
 
@@ -123,6 +164,38 @@
         </div>
     </div>
 @endsection
+<style>
+    .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.bar-label {
+    width: 220px;
+}
+
+.bar-track {
+    flex: 1;
+    height: 10px;
+    background: #eef0f4;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: #1d5fa7;
+    border-radius: 999px;
+}
+
+.bar-val {
+    width: 90px;
+    text-align: right;
+    font-weight: 600;
+}
+</style>
 
 @section('scripts')
     <script src="{{ asset('js/admin-events.js') }}"></script>

@@ -5,13 +5,12 @@ use App\Models\Event;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
     public function __construct()
     {
-        // index + show: both admin and user (authenticated)
-        $this->middleware('auth')->only(['index', 'show']);
 
         // CRUD: admin only
         $this->middleware(['auth', 'role:admin,super_admin'])->except(['index', 'show']);
@@ -19,6 +18,10 @@ class EventController extends Controller
 
     public function index()
     {
+        if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super_admin'])) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $period = request('period', 'upcoming');
         $category = request('category');
         $artist = request('artist');
@@ -114,6 +117,10 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
+        if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super_admin'])) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $event->load('category');
         return view('events.show', compact('event'));
     }

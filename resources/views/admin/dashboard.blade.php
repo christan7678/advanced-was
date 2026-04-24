@@ -51,7 +51,10 @@
             @else
                 @foreach($purchasesByCategory as $category)
                     <div class="bar-row">
-                        <div class="bar-label">{{ $category->name }}</div>
+                        <a href="{{ route('admin.events.category', ['category' => $category->id]) }}"
+                            class="bar-label text-decoration-none">
+                            {{ $category->name }}
+                        </a>
                         <div class="bar-track">
                             <div class="bar-fill" style="width: {{ round(($category->total_purchases / $maxSeats) * 100) }}%;">
                             </div>
@@ -64,14 +67,15 @@
 
         {{-- Payment Status --}}
         <div class="dash-card">
-            <div class="dash-card-title">Payment Status</div>
+            <div class="dash-card-title">Payment Status For All Event</div>
 
             <div class="status-chart-wrap">
                 <div class="status-donut" style="background: conic-gradient(
-                                        #16a34a 0% {{ $completed }}%,
-                                        #d97706 {{ $completed }}% {{ $pendingEnd }}%,
-                                        #dc2626 {{ $pendingEnd }}% 100%
-                                    );">
+                        #16a34a 0% {{ $completedEnd }}%,
+                        #a1c626 {{ $completedEnd }}% {{ $pendingEnd }}%,
+                        #d97706 {{ $pendingEnd }}% {{ $refundedEnd }}%,
+                        #dc2626 {{ $refundedEnd }}% 100%
+                    );">
                     <div class="status-donut-center">
                         <div class="status-donut-total">{{ $totalPurchases }}</div>
                         <div class="status-donut-sub">Purchases</div>
@@ -88,6 +92,11 @@
                         <span class="legend-dot legend-pending"></span>
                         <span class="legend-label">Pending</span>
                         <span class="legend-value">{{ $pending }}%
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-dot legend-refunded"></span>
+                        <span class="legend-label">refunded</span>
+                        <span class="legend-value">{{ $refunded }}%</span>
                     </div>
                     <div class="legend-row">
                         <span class="legend-dot legend-cancelled"></span>
@@ -132,6 +141,8 @@
                                 completed payment
                             @elseif($activity->payment_status === 'pending')
                                 pending payment
+                            @elseif($activity->payment_status === 'refunded')
+                                refunded payment
                             @elseif($activity->payment_status === 'cancelled')
                                 cancelled payment
                             @endif

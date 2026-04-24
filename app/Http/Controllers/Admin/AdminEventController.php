@@ -36,7 +36,32 @@ class AdminEventController extends Controller
             ->orderByDesc('time')
             ->get();
 
-        return view('admin.events.category', compact('category', 'events'));
+        $totalSold = $events->sum(function ($event) {
+            return max(0, (int) $event->total_seats - (int) $event->available_seats);
+        });
+
+        $eventChartData = [];
+        $currentPercent = 0;
+
+        foreach ($events as $event) {
+            $sold = max(0, (int) $event->total_seats - (int) $event->available_seats);
+
+            $percent = $totalSold > 0
+                ? round(($sold / $totalSold) * 100, 2)
+                : 0;
+
+            $eventChartData[] = [
+                'name' => $event->name,
+                'sold' => $sold,
+                'percent' => $percent,
+                'start' => $currentPercent,
+                'end' => min(100, $currentPercent + $percent),
+            ];
+
+            $currentPercent += $percent;
+        }
+
+        return view('admin.events.category', compact('category', 'events','totalSold','eventChartData'));
     }
 
     public function create(Request $request)

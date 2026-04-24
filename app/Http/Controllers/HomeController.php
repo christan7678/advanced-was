@@ -30,8 +30,12 @@ class HomeController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index(): View
+    public function index()
     {
+        if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super_admin'])) {
+            return redirect()->route('admin.dashboard');
+        }
+
         return view('home.home', $this->buildViewData());
     }
 

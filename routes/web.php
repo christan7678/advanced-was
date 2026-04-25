@@ -99,6 +99,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,super_ad
     Route::post('/refund/{payment}', [RefundController::class, 'refund'])->name('refund.process');
 });
 
+
+// for super admin only
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin'])->group(function () {
     Route::get('/admins', [AdminManagementController::class, 'index'])->name('admins.index');
     Route::get('/admins/{admin}', [AdminManagementController::class, 'show'])->name('admins.show');

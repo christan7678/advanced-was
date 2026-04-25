@@ -73,6 +73,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/tickets/{ticket}/qr', [TicketController::class, 'showQR'])->name('tickets.qr');
 });
 
+// for admin + super admin
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,super_admin'])->group(function () {
     Route::redirect('/', '/admin/dashboard');
 

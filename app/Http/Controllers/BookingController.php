@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Ticket;
 use App\Models\Event;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -193,12 +194,36 @@ class BookingController extends Controller
                 'paid_at' => null,
             ]);
 
+            $qrPaths = [
+                'storage/qrs/qr1.jpg',
+                'storage/qrs/qr2.jpg',
+                'storage/qrs/qr3.jpg',
+            ];
+
+            $lastTicket = Ticket::orderBy('id', 'desc')->first();
+
+            if ($lastTicket && $lastTicket->ticket_code) {
+                $lastNumber = (int) preg_replace('/[^0-9]/', '', $lastTicket->ticket_code);
+                $nextNumber = $lastNumber + 1;
+            } else {
+                $nextNumber = 1;
+            }
+
+            Ticket::create([
+                'booking_id' => $booking->id,
+                'user_id' => auth()->id(),
+                'event_id' => $request->event_id,
+                'ticket_code' => 'TK' . $nextNumber ,
+                'qr_code_path' => $qrPaths[array_rand($qrPaths)],
+                'status' => 'active',
+            ]);
+
             $event->decrement('available_seats', $numberOfSeats);
 
             return $booking;
         });
 
-        return redirect()->route('payment.show', $booking)
+        return redirect()->route('bookings.after', $booking)
             ->with('success', 'Booking created. Please complete payment within 15 minutes.');
     }
 

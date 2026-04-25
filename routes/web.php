@@ -47,12 +47,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
-Route::middleware('not_admin')->group(function () {
+Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/events', [EventController::class, 'index'])->name('events.index');
     Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
-});
-
-Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/profile', [UserController::class, 'index'])->name('profile.index');
     Route::get('/profile-detail', [UserController::class, 'showDetail'])->name('profile.detail');
     Route::get('/profile/my-tickets', [UserController::class, 'tickets'])->name('profile.tickets');
@@ -68,7 +65,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
-    Route::get('/bookings/{booking}/afterBooking', [BookingController::class, 'afterBooking'])->name('bookings.afterBooking');
+    Route::get('/bookings/{booking}/afterBooking', [BookingController::class, 'afterBooking'])->name('bookings.after');
 
     Route::get('/payment/{booking}', [PaymentController::class, 'show'])->name('payment.show');
     Route::post('/payment/{booking}', [PaymentController::class, 'process'])->name('payment.process');

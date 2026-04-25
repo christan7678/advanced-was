@@ -10,8 +10,11 @@
 
 <section class="home-section artist-section">
     <div class="section-header">
-        <h2 class="section-title">Popular Artists</h2>
-        <a href="{{ $artistsLink }}" class="section-link">{{ $canBrowseEvents ? 'See all ->' : 'Sign in ->' }}</a>
+        <div>
+            <div class="section-label">PERFORMING SOON</div>
+            <h2 class="section-title">Popular Artists</h2>
+        </div>
+        <a href="{{ $artistsLink }}" class="section-link">{{ $canBrowseEvents ?  'See all ->' : 'Sign in ->' }}</a>
     </div>
 
     @if($popularArtists->isNotEmpty())

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/profile-index.css') }}">
+@endsection
+
 @section('content')
 <div class="account-page">
 
@@ -16,7 +20,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('logout') }}">
+            <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Are you sure you want to sign out?')">
                 @csrf
                 <button type="submit" class="account-signout-btn">
                     Sign Out

@@ -1,0 +1,205 @@
+.payment-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 36px 28px 60px;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+.payment-container {
+    background: #ffffff;
+    border: 1px solid #dbe5f0;
+    border-radius: 30px;
+    padding: 34px;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.1);
+}
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.payment-label {
+    color: #0d6efd;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.payment-header h1 {
+    margin: 6px 0;
+    font-size: 38px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.payment-header p {
+    color: #64748b;
+}
+
+.payment-back-btn-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid #dbe5f0;
+    background: #ffffff;
+    color: #0d6efd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.payment-back-btn-icon:hover {
+    background: #0d6efd;
+    color: #ffffff;
+    border-color: #0d6efd;
+}
+
+.payment-back-btn,
+.payment-cancel-btn {
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.payment-layout {
+    display: grid;
+    grid-template-columns: 1.5fr 0.9fr;
+    gap: 28px;
+}
+
+.payment-card,
+.payment-summary {
+    background: #ffffff;
+    border: 1px solid #dbe5f0;
+    border-radius: 26px;
+    padding: 28px;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+}
+
+.payment-card h2,
+.payment-summary h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 18px;
+}
+
+.payment-timer {
+    background: #fff7ed;
+    color: #c2410c;
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-weight: 700;
+    margin-bottom: 22px;
+}
+
+.payment-field {
+    margin-bottom: 16px;
+}
+
+.payment-field label {
+    display: block;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.payment-field input,
+.payment-field select {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #dbe5f0;
+    border-radius: 14px;
+    padding: 0 14px;
+}
+
+.payment-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.payment-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.payment-pay-btn,
+.payment-cancel-btn {
+    flex: 1;
+    height: 50px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-pay-btn {
+    border: none;
+    background: #0d6efd;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.payment-cancel-btn {
+    border: 1.5px solid #dbe5f0;
+    background: #ffffff;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid #edf2f7;
+    color: #64748b;
+}
+
+.summary-row strong {
+    color: #0f172a;
+    text-align: right;
+}
+
+.summary-row.total strong {
+    color: #059669;
+    font-size: 24px;
+}
+
+.summary-note {
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 16px;
+    background: #eaf2ff;
+    color: #0d6efd;
+    font-weight: 700;
+    text-align: center;
+}
+
+.payment-alert {
+    margin-bottom: 20px;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 700;
+}
+
+.payment-alert.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+@media (max-width: 900px) {
+    .payment-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-header {
+        flex-direction: column;
+    }
+}

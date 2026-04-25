@@ -23,7 +23,15 @@
                 @endphp
 
                 <div class="featured-card">
-                    <div class="featured-card-top" style="background: linear-gradient(135deg, {{ $eventColor }}, #111827 140%);"></div>
+                    @php
+                        $featuredImage = $event->image
+                            ? (\Illuminate\Support\Str::startsWith($event->image, ['http://', 'https://']) ? $event->image : asset('storage/' . $event->image))
+                            : 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=500&fit=crop';
+                    @endphp
+
+                    <div class="featured-card-top">
+                        <img src="{{ $featuredImage }}" alt="{{ $event->name }}">
+                    </div>
                     <div class="featured-card-body">
                         <div class="featured-tag">{{ $event->category?->name ?? 'Featured' }}</div>
                         <div class="featured-name">{{ $event->name }}</div>

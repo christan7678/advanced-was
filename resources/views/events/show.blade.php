@@ -12,6 +12,9 @@
     <div class="event-detail-page">
 
         <div class="detail-hero">
+            <a href="{{ route('events.index') }}" class="detail-back-btn">
+                &#10094;
+            </a>
             <img src="{{ $event->image ? asset('storage/' . $event->image) : 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1600&h=600&fit=crop' }}"
                 alt="{{ $event->name }}">
             <div class="detail-hero-overlay"></div>

@@ -3,10 +3,11 @@
    ================================================ */
 
 .site-footer {
-    background: #f9fafb;
-    border-top: 1px solid #e5e7eb;
+    background: #f8fbff;
+    border-top: 1px solid #dbe5f0;
     padding: 48px 24px 28px;
     margin-top: 48px;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 .footer-inner {
@@ -14,7 +15,6 @@
     margin: 0 auto;
 }
 
-/* 3-column grid: brand takes more space */
 .footer-grid {
     display: grid;
     grid-template-columns: 1.6fr 1fr 1fr;
@@ -22,7 +22,7 @@
     margin-bottom: 40px;
 }
 
-/* Brand column */
+/* Brand */
 .footer-brand {
     display: flex;
     flex-direction: column;
@@ -35,65 +35,52 @@
     gap: 12px;
 }
 
-.footer-logo {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    background: #185FA5;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
 .footer-brand-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
     margin: 0;
-    font-style: italic;
     color: #0d6efd;
+    font-size: 20px;
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: 0.3;
 }
 
 .footer-tagline {
-    font-size: 13px;
-    color: #6b7280;
-    line-height: 1.65;
-    max-width: 240px;
+    max-width: 270px;
     margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.75;
 }
 
-/* Trust badges */
+/* Badges */
 .footer-badge-row {
     display: flex;
-    gap: 8px;
     flex-wrap: wrap;
+    gap: 8px;
 }
 
 .footer-badge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    padding: 6px 12px;
+    border-radius: 999px;
     background: #eaf2ff;
-    color: #0C447C;
+    color: #0d6efd;
     font-size: 12px;
-    font-weight: 500;
-    padding: 4px 10px;
-    border-radius: 20px;
+    font-weight: 700;
     line-height: 1;
 }
 
-/* Link columns */
+/* Links */
 .footer-col h4 {
-    font-size: 11px;
-    font-weight: 700;
-    color: #9ca3af;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
     margin: 0 0 16px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
 .footer-col a {
@@ -101,68 +88,70 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #374151;
+    color: #1e293b;
+    font-size: 15px;
+    font-weight: 700;
     text-decoration: none;
-    transition: color 0.15s;
+    transition: all 0.2s ease;
 }
 
 .footer-col a svg {
-    color: #9ca3af;
+    color: #64748b;
     flex-shrink: 0;
-    transition: color 0.15s;
+    transition: all 0.2s ease;
 }
 
 .footer-col a:hover {
-    color: #185FA5;
+    color: #0d6efd;
 }
 
 .footer-col a:hover svg {
-    color: #185FA5;
+    color: #0d6efd;
 }
 
-/* Bottom bar */
+/* Bottom */
 .footer-bottom {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 24px;
-    border-top: 1px solid #e5e7eb;
     flex-wrap: wrap;
     gap: 16px;
+    padding-top: 24px;
+    border-top: 1px solid #dbe5f0;
 }
 
 .footer-copy {
-    font-size: 13px;
-    color: #9ca3af;
     margin: 0;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 500;
 }
 
-/* Social icons */
+/* Social */
 .footer-social {
     display: flex;
     gap: 10px;
 }
 
 .footer-social a {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #dbe5f0;
+    border-radius: 12px;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    color: #374151;
+    color: #1e293b;
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    transition: all 0.15s;
+    transition: all 0.2s ease;
 }
 
 .footer-social a:hover {
-    border-color: #185FA5;
-    color: #185FA5;
-    background: #eaf2ff;
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: #ffffff;
+    transform: translateY(-3px);
 }
 
 /* Responsive */

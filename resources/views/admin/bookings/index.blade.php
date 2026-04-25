@@ -2,8 +2,18 @@
 
 @section('title', 'Bookings')
 @section('page-title', 'Bookings')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/admin-dashboard.css') }}">
+@endpush
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/admin-bookings.css') }}">
+@endpush
 
 @section('topbar-actions')
+    @if(request()->has('event_id'))
+        <a href="{{ url()->previous() }}" class="btn-outline-sm">← Back</a>
+    @endif
+
     <span class="topbar-date">{{ $bookings->total() }} total bookings</span>
 @endsection
 
@@ -56,7 +66,7 @@
     </div>
 </div>
 
-<div class="stat-grid" style="margin-bottom:18px;">
+<div class="bookings-stat-grid">
     <div class="stat-card">
         <div class="stat-label">Total Bookings</div>
         <div class="stat-value">{{ $current['total_bookings'] }}</div>
@@ -85,12 +95,27 @@
 <form class="toolbar" method="GET" action="{{ route('admin.bookings.index') }}">
     <input class="toolbar-search" type="text" name="q" value="{{ $q }}" placeholder="Search by booking ID, username, or email...">
 
-    <select class="toolbar-select" name="status">
+    <select name="status" class="toolbar-select" onchange="this.form.submit()">
         <option value="" {{ $status === '' ? 'selected' : '' }}>All status</option>
         <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Pending</option>
         <option value="confirmed" {{ $status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
         <option value="cancelled" {{ $status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
     </select>
+
+    <select name="per_page" class="toolbar-select" onchange="this.form.submit()">
+        <option value="12" {{ $perPage == 12 ? 'selected' : '' }}>12 / page</option>
+        <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25 / page</option>
+        <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50 / page</option>
+    </select>
+
+    <select name="sort" class="toolbar-select" onchange="this.form.submit()">
+        <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>Latest</option>
+        <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>Oldest</option>
+    </select>
+
+    <a href="{{ route('admin.bookings.index', ['clear' => 1]) }}" class="btn-outline-sm">
+        Clear
+    </a>
 </form>
 
 <div class="table-wrap">

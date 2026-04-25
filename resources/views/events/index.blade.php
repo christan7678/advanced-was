@@ -6,176 +6,157 @@
 
 @section('content')
 
-<!-- Events Top Bar -->
-<div class="events-topbar">
-    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px;">
-        <h2 class="section-title" style="margin: 0;">
+<div class="events-page">
+
+    <div class="events-topbar">
+        <h2 class="section-title">
             {{ $period === 'past' ? 'Past Events' : 'Upcoming Events' }}
         </h2>
 
-        <div class="event-filter-tabs">
-            <a href="{{ route('events.index', array_merge(request()->except('page', 'period'), ['period' => 'upcoming'])) }}"
-               class="event-filter-tab {{ $period !== 'past' ? 'active' : '' }}">Upcoming</a>
-            <a href="{{ route('events.index', array_merge(request()->except('page', 'period'), ['period' => 'past'])) }}"
-               class="event-filter-tab {{ $period === 'past' ? 'active' : '' }}">Past</a>
-        </div>
-    </div>
+        <div class="events-control-row">
+            <div class="event-filter-tabs">
+                <a href="{{ route('events.index', array_merge(request()->except('page', 'period'), ['period' => 'upcoming'])) }}"
+                   class="event-filter-tab {{ $period !== 'past' ? 'active' : '' }}">Upcoming</a>
 
-    <div class="event-filter-wrap" id="eventFilterWrap">
-        <button class="filter-toggle-btn" id="filterToggleBtn" type="button">
-            Filter
-        </button>
+                <a href="{{ route('events.index', array_merge(request()->except('page', 'period'), ['period' => 'past'])) }}"
+                   class="event-filter-tab {{ $period === 'past' ? 'active' : '' }}">Past</a>
+            </div>
 
-        <div class="event-filter-dropdown" id="filterPanel">
-            <div class="event-filter-panel">
+            <div class="event-filter-wrap" id="eventFilterWrap">
+                <button class="filter-toggle-btn" id="filterToggleBtn" type="button">
+                    Filter
+                </button>
 
-                <!-- Search -->
-                <div class="event-filter-group">
-                    <div class="event-filter-label">Search</div>
-                    <form method="GET" action="{{ route('events.index') }}" style="display: grid; gap: 8px;">
-                        <input type="hidden" name="period" value="{{ $period }}">
-                        @if($category)
-                            <input type="hidden" name="category" value="{{ $category }}">
+                <div class="event-filter-dropdown" id="filterPanel">
+                    <div class="event-filter-panel">
+                        <div class="event-filter-group">
+                            <div class="event-filter-label">Search</div>
+
+                            <form method="GET" action="{{ route('events.index') }}" class="event-search-form">
+                                <input type="hidden" name="period" value="{{ $period }}">
+
+                                @if($category)
+                                    <input type="hidden" name="category" value="{{ $category }}">
+                                @endif
+
+                                @if($artist)
+                                    <input type="hidden" name="artist" value="{{ $artist }}">
+                                @endif
+
+                                <input type="text" name="q" placeholder="Search by event name..." value="{{ $searchQuery }}">
+                                <button type="submit">Search</button>
+                            </form>
+                        </div>
+
+                        @if($categories->count() > 0)
+                            <div class="event-filter-group">
+                                <div class="event-filter-label">Category</div>
+
+                                <div class="event-filter-tabs">
+                                    <a href="{{ route('events.index', request()->except('category')) }}"
+                                       class="event-filter-tab {{ !$category ? 'active' : '' }}">All Categories</a>
+
+                                    @foreach($categories as $cat)
+                                        <a href="{{ route('events.index', array_merge(request()->except('page'), ['category' => $cat->name])) }}"
+                                           class="event-filter-tab {{ $category === $cat->name ? 'active' : '' }}">
+                                            {{ $cat->name }} ({{ $cat->events_count }})
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
                         @endif
-                        @if($artist)
-                            <input type="hidden" name="artist" value="{{ $artist }}">
+
+                        @if($artists->count() > 0)
+                            <div class="event-filter-group">
+                                <div class="event-filter-label">Artist / Performer</div>
+
+                                <div class="event-filter-tabs">
+                                    <a href="{{ route('events.index', request()->except('artist')) }}"
+                                       class="event-filter-tab {{ !$artist ? 'active' : '' }}">All Artists</a>
+
+                                    @foreach($artists as $art)
+                                        <a href="{{ route('events.index', array_merge(request()->except('page'), ['artist' => $art])) }}"
+                                           class="event-filter-tab {{ $artist === $art ? 'active' : '' }}">{{ $art }}</a>
+                                    @endforeach
+                                </div>
+                            </div>
                         @endif
-                        <input 
-                            type="text" 
-                            name="q" 
-                            placeholder="Search by event name..." 
-                            value="{{ $searchQuery }}"
-                            style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px;"
-                        >
-                        <button type="submit" style="background: #2563eb; color: white; padding: 8px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">
-                            Search
-                        </button>
-                    </form>
+                    </div>
                 </div>
-
-                <!-- Category Filter -->
-                @if($categories->count() > 0)
-                    <div class="event-filter-group">
-                        <div class="event-filter-label">Category</div>
-                        <div class="event-filter-tabs">
-                            <a href="{{ route('events.index', request()->except('category')) }}"
-                               class="event-filter-tab {{ !$category ? 'active' : '' }}">All Categories</a>
-
-                            @foreach($categories as $cat)
-                                <a href="{{ route('events.index', array_merge(request()->except('page'), ['category' => $cat->name])) }}"
-                                   class="event-filter-tab {{ $category === $cat->name ? 'active' : '' }}">
-                                    {{ $cat->name }} ({{ $cat->events_count }})
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Artist Filter -->
-                @if($artists->count() > 0)
-                    <div class="event-filter-group">
-                        <div class="event-filter-label">Artist / Performer</div>
-                        <div class="event-filter-tabs">
-                            <a href="{{ route('events.index', request()->except('artist')) }}"
-                               class="event-filter-tab {{ !$artist ? 'active' : '' }}">All Artists</a>
-
-                            @foreach($artists as $art)
-                                <a href="{{ route('events.index', array_merge(request()->except('page'), ['artist' => $art])) }}"
-                                   class="event-filter-tab {{ $artist === $art ? 'active' : '' }}">{{ $art }}</a>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
             </div>
         </div>
     </div>
-</div>
 
-<!-- Events List by Month -->
-@forelse($groupedEvents as $month => $events)
-    <div class="month-group">
-        <div class="month-label"> {{ $month }}</div>
+    @forelse($groupedEvents as $month => $events)
+        <div class="month-group">
+            <div class="month-label">{{ $month }}</div>
 
-        <div class="event-grid">
-            @foreach($events as $event)
-                <div class="event-row">
-                    <!-- Date Column -->
-                    <div class="event-left">
-                        <div class="event-date">
-                            <div class="day">{{ $event->date->format('D') }}</div>
-                            <div class="number">{{ $event->date->format('d') }}</div>
-                            <div class="month">{{ $event->date->format('M') }}</div>
-                        </div>
-                    </div>
+            <div class="event-grid">
+                @foreach($events as $event)
+                    <div class="event-card">
+                        <div class="event-card-image">
+                            <img
+                                src="{{ $event->image ? asset('storage/' . $event->image) : 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&h=300&fit=crop' }}"
+                                alt="{{ $event->name }}"
+                            >
 
-                    <!-- Image Column -->
-                    <div class="event-image">
-                        <img 
-                            src="{{ $event->image ? asset('storage/' . $event->image) : 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&h=300&fit=crop' }}" 
-                            alt="{{ $event->name }}"
-                        >
-                    </div>
-
-                    <!-- Details Column -->
-                    <div class="event-details">
-                        <!-- Category Badge -->
-                        <div class="event-header">
-                            @if($event->category)
-                                <span class="event-category">{{ $event->category->name }}</span>
-                            @endif
-                        </div>
-
-                        <!-- Event Title -->
-                        <div class="event-title">{{ $event->name }}</div>
-
-                        <!-- Artist -->
-                        @if($event->artist)
-                            <div class="event-artist">{{ $event->artist }}</div>
-                        @endif
-
-                        <!-- Info (Time & Venue) -->
-                        <div class="event-info">
-                            {{ $event->time }} ·  {{ $event->venue }}
-                        </div>
-
-                        <!-- Availability -->
-                        <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">
-                            @if($event->date && $event->date->lt(today()))
-                                ❌ Event Ended
-                            @elseif($event->status === 'sold_out' || $event->available_seats <= 0)
-                                ❌ Sold Out
-                            @else
-                                ✅ {{ $event->available_seats }} seats available
-                            @endif
-                        </div>
-
-                        <!-- Footer with Price and Button -->
-                        <div class="event-footer">
-                            <div class="event-price" style="color: #059669; font-weight: 700;">
-                                RM{{ number_format($event->price, 2) }}
+                            <div class="event-date-badge">
+                                <span>{{ $event->date->format('D') }}</span>
+                                <strong>{{ $event->date->format('d') }}</strong>
+                                <small>{{ $event->date->format('M') }}</small>
                             </div>
                         </div>
 
-                        <a href="{{ route('events.show', $event->id) }}" class="btn-buy">
-                            {{ $period === 'past' ? 'View Details' : 'View & Book' }}
-                        </a>
+                        <div class="event-card-body">
+                            @if($event->category)
+                                <span class="event-category">{{ $event->category->name }}</span>
+                            @endif
+
+                            <h3 class="event-title">{{ $event->name }}</h3>
+
+                            @if($event->artist)
+                                <div class="event-artist">{{ $event->artist }}</div>
+                            @endif
+
+                            <div class="event-info">
+                                {{ $event->time }} · {{ $event->venue }}
+                            </div>
+
+                            <div class="event-seat">
+                                @if($event->date && $event->date->lt(today()))
+                                    Event Ended
+                                @elseif($event->status === 'sold_out' || $event->available_seats <= 0)
+                                    Sold Out
+                                @else
+                                    {{ $event->available_seats }} seats available
+                                @endif
+                            </div>
+
+                            <div class="event-card-footer">
+                                <div class="event-price">
+                                    RM{{ number_format($event->price, 2) }}
+                                </div>
+
+                                <a href="{{ route('events.show', $event->id) }}" class="btn-buy">
+                                    {{ $period === 'past' ? 'View Details' : 'View & Book' }}
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
-    </div>
-@empty
-    <div class="event-empty-state">
-        <div style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 5px;">
-            {{ $period === 'past' ? 'No Past Events Found' : 'No Upcoming Events Found' }}
+    @empty
+        <div class="event-empty-state">
+            <div class="empty-title">
+                {{ $period === 'past' ? 'No Past Events Found' : 'No Upcoming Events Found' }}
+            </div>
+            <div class="empty-text">Try adjusting your filters or come back later for more exciting events!</div>
+            <a href="{{ route('events.index', ['period' => $period]) }}" class="empty-btn">Clear Filters</a>
         </div>
-        <div style="color: #6b7280;">Try adjusting your filters or come back later for more exciting events!</div>
-        <a href="{{ route('events.index', ['period' => $period]) }}" style="display: inline-block; margin-top: 15px; background: #2563eb; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600;">
-            Clear Filters
-        </a>
-    </div>
-@endforelse
+    @endforelse
+
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

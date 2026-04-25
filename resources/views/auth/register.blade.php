@@ -14,8 +14,6 @@
             <p class="auth-subtitle">Start booking events today</p>
         </div>
 
-        <a href="#" class="btn-oauth">Sign up with Google</a>
-
         <div class="auth-divider">
             <span class="auth-divider-line"></span>
             <span class="auth-divider-text">or</span>
@@ -67,12 +65,16 @@
             <div class="auth-field">
                 <label for="phone" class="auth-label">{{ __('Phone number') }}</label>
                 <div class="auth-error">
-                    <input type="tel" name="phone" id="phone" class="auth-input @error('phone') is-invalid @enderror" placeholder="+60 12-345 6789" required autocomplete="phone" value="{{ old('phone') }}">
-                
-                    @error('phone')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
+                    <input type="tel" name="phone_number" id="phone_number"
+                        class="auth-input @error('phone_number') is-invalid @enderror"
+                        placeholder="0123456789"
+                        required autocomplete="tel"
+                        value="{{ old('phone_number') }}">
+
+                    @error('phone_number')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
                     @enderror
 
                 </div>
@@ -144,7 +146,7 @@
                         </button>
                     </div>
 
-                    @error('confirm_password')
+                    @error('password_confirmation')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>

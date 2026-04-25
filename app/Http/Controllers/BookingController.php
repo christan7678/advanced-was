@@ -132,7 +132,8 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         if (!auth()->check()) {
-            return redirect()->route('login')->with('error', 'Only users can make bookings.');
+            return redirect()->route('login')->with('error', 
+            'Only users can make bookings.');
         }
 
         $request->validate([

@@ -15,7 +15,7 @@
                 <p>View your personal account details.</p>
             </div>
 
-            <a href="{{ url()->previous() }}" class="profile-detail-back">
+            <a href="{{ route('profile.index') }}" class="profile-detail-back">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                      fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path d="M15 18l-6-6 6-6"/>
@@ -34,6 +34,9 @@
 
                 <div class="profile-info-label">Email Address</div>
                 <div class="profile-info-value muted">{{ Auth::user()->email ?? 'Email' }}</div>
+
+                <div class="profile-info-label">Phone number</div>
+                <div class="profile-info-value muted">{{ Auth::user()->phone_number ?? 'Phone Number' }}</div>
             </div>
         </div>
 

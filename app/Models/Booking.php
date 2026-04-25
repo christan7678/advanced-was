@@ -16,13 +16,11 @@ class Booking extends Model
         'payment_status',
         'booking_status',
         'paid_at',
-        'cancelled_at',
         'expires_at',
     ];
 
     protected $casts = [
         'paid_at' => 'datetime',
-        'cancelled_at' => 'datetime',
         'expires_at' => 'datetime',
     ];
 
@@ -66,7 +64,6 @@ class Booking extends Model
 
             $this->payment_status = 'cancelled';
             $this->booking_status = 'cancelled';
-            $this->cancelled_at = now();
             $this->save();
 
             if ($this->payment) {

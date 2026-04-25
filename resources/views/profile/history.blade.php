@@ -50,7 +50,7 @@
                 <p>Review your booking and payment records.</p>
             </div>
 
-            <a href="{{ url()->previous() }}" class="profile-detail-back">
+            <a href="{{ route('bookings.show', ['booking' => $booking, 'from' => url()->current() }}" class="profile-detail-back">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                      fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path d="M15 18l-6-6 6-6"/>

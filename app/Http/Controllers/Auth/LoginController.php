@@ -24,19 +24,14 @@ class LoginController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
-
             $user = Auth::user();
-
             if ($user->role === 'admin' || $user->role === 'super_admin') {
                 return redirect('/admin/dashboard');
             }
-
             return redirect()->intended('/home');
         }
-
         return back()->withErrors([
             'email' => 'Email or password incorrect',
         ])->onlyInput('email');

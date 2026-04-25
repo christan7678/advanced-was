@@ -133,37 +133,38 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    eventSelect.addEventListener('change', function () {
+    if (eventSelect) {
+        eventSelect.addEventListener('change', function () {
 
-        const selectedOption = eventSelect.options[eventSelect.selectedIndex];
-        const available = parseInt(selectedOption.dataset.available) || 0;
+            const selectedOption = eventSelect.options[eventSelect.selectedIndex];
+            const available = parseInt(selectedOption.dataset.available) || 0;
 
-        const ticketSection = document.getElementById('ticketSection');
-        const submitBtn = document.getElementById('submitBtn');
-        const soldOutBox = document.getElementById('soldOutBox');
+            const ticketSection = document.getElementById('ticketSection');
+            const submitBtn = document.getElementById('submitBtn');
+            const soldOutBox = document.getElementById('soldOutBox');
 
-        if (available <= 0) {
+            if (available <= 0) {
+                if (soldOutBox) soldOutBox.style.display = 'block';
+                if (ticketSection) ticketSection.style.display = 'none';
+                if (priceContainer) priceContainer.style.display = 'none';
+                if (submitBtn) submitBtn.style.display = 'none';
 
-            if (soldOutBox) soldOutBox.style.display = 'block';
+                seatsInput.disabled = true;
+                return;
+            }
 
-            if (ticketSection) ticketSection.style.display = 'none';
-            if (priceContainer) priceContainer.style.display = 'none';
-            if (submitBtn) submitBtn.style.display = 'none';
+            if (soldOutBox) soldOutBox.style.display = 'none';
+            if (ticketSection) ticketSection.style.display = 'block';
+            if (priceContainer) priceContainer.style.display = 'block';
+            if (submitBtn) submitBtn.style.display = 'block';
 
-            seatsInput.disabled = true;
+            seatsInput.disabled = false;
 
-            return;
-        }
+            updateEventPrice();
+        });
+    }
 
-        if (soldOutBox) soldOutBox.style.display = 'none';
-        if (ticketSection) ticketSection.style.display = 'block';
-        if (priceContainer) priceContainer.style.display = 'block';
-        if (submitBtn) submitBtn.style.display = 'block';
-
-        seatsInput.disabled = false;
-
-        updateEventPrice();
-    });
-
-    seatsInput.addEventListener('input', updatePrice);
+    if (seatsInput) {
+        seatsInput.addEventListener('input', updatePrice);
+    }
 });

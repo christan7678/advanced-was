@@ -90,7 +90,6 @@ class BookingController extends Controller
                 $booking->update([
                     'payment_status' => 'cancelled',
                     'booking_status' => 'cancelled',
-                    'cancelled_at' => now(),
                 ]);
 
                 if ($booking->payment) {
@@ -266,7 +265,6 @@ class BookingController extends Controller
             $booking->update([
                 'booking_status' => 'cancelled',
                 'payment_status' => $newPaymentStatus,
-                'cancelled_at' => now(),
             ]);
 
 

@@ -17,13 +17,48 @@ class AdminBookingController extends Controller
 
     public function index(Request $request)
     {
-        $q = trim((string) $request->query('q', ''));
-        $status = (string) $request->query('status', '');
+        if ($request->has('clear')) {
+            Cookie::queue(Cookie::forget('booking_status'));
+            Cookie::queue(Cookie::forget('booking_q'));
+            Cookie::queue(Cookie::forget('booking_per_page'));
+            Cookie::queue(Cookie::forget('booking_sort'));
+
+            return redirect()->route('admin.bookings.index');
+        }
+        $q = trim((string) $request->query('q', $request->cookie('booking_q', '')));
+
+        if ($request->has('q')) {
+            Cookie::queue('booking_q', $q, 60 * 24 * 7); // 7 days
+        }
+
+        $status = (string) $request->query('status', $request->cookie('booking_status', ''));
+        
+        if ($request->has('status')) {
+            Cookie::queue('booking_status', $status, 60 * 24 * 7); // 7 days
+        }
+
+        $perPage = (int) $request->query('per_page', $request->cookie('booking_per_page', 12));
+
+        if ($request->has('per_page')) {
+            Cookie::queue('booking_per_page', $perPage, 60 * 24 * 7);
+        }
+        
+        $sort = (string) $request->query('sort', $request->cookie('booking_sort', 'latest'));
+
+        if ($request->has('sort')) {
+            Cookie::queue('booking_sort', $sort, 60 * 24 * 7);
+        }
+
         $event_id = $request->query('event_id');
 
         $query = Booking::query()
-            ->with(['user', 'event.category'])
-            ->latest();
+        ->with(['user', 'event.category']);
+
+        if ($sort === 'oldest') {
+            $query->orderBy('created_at', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc'); // latest
+        }
 
         if ($status !== '') {
             $query->where('booking_status', $status);
@@ -45,7 +80,7 @@ class AdminBookingController extends Controller
             });
         }
 
-        $bookings = $query->paginate(12)->withQueryString();
+        $bookings = $query->paginate($perPage)->withQueryString();
 
         // Get booking statistics
         $statsQuery = Booking::query();
@@ -91,7 +126,7 @@ class AdminBookingController extends Controller
             ];
         }
 
-        return view('admin.bookings.index', compact('bookings', 'q', 'status', 'current'));
+        return view('admin.bookings.index', compact('bookings', 'q', 'status', 'current', 'perPage', 'sort'));
     }
 
     public function show(Booking $booking)

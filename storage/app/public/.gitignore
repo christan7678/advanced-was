@@ -1,2 +1,6 @@
 *
 !.gitignore
+!events/
+!events/**
+!qrs/
+!qrs/**

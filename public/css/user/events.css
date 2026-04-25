@@ -296,19 +296,75 @@ body {
 /* ================================================
    Responsive
 ================================================ */
-@media (max-width: 1199px) {
-    .event-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
 
-@media (max-width: 767px) {
-    .events-control-row {
-        flex-direction: column;
-        align-items: flex-start;
+@media (max-width: 768px) {
+    .events-page,
+    .event-page,
+    .events-container {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
-    .event-grid {
+    .events-header,
+    .event-header {
+        text-align: center;
+    }
+
+    .events-header h1,
+    .event-header h1 {
+        font-size: 34px;
+        line-height: 1.15;
+    }
+
+    .event-tabs,
+    .events-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-panel,
+    .filter-sidebar,
+    .event-filter {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 100%;
+        max-width: 100%;
+        margin: 18px 0;
+        border-radius: 20px;
+        transform: none;
+    }
+
+    .event-grid,
+    .events-grid,
+    .cards-grid {
+        display: grid;
         grid-template-columns: 1fr;
+        gap: 18px;
+        width: 100%;
+    }
+
+    .event-card {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .category-chips,
+    .filter-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .category-chips button,
+    .filter-chips button {
+        max-width: 100%;
+        white-space: normal;
     }
 }

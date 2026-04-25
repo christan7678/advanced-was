@@ -126,6 +126,7 @@
 
         {{-- Topbar --}}
         <div class="admin-topbar">
+            <button id="menuToggle" class="menu-toggle">☰</button>
             <div class="topbar-title">@yield('page-title')</div>
             <div class="topbar-right">@yield('topbar-actions')</div>
         </div>
@@ -140,6 +141,19 @@
 </div>
 
 @yield('scripts')
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('menuToggle');
+    const sidebar = document.querySelector('.admin-sidebar');
+
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('hidden');
+        });
+    }
+});
+</script>
 
 </body>
 </html>

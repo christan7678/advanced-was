@@ -206,3 +206,36 @@ textarea {
         padding-right: 16px;
     }
 }
+
+.menu-toggle {
+    display: none;
+    font-size: 22px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #111827;
+}
+
+.admin-sidebar {
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 900px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 230px;
+        height: 100vh;
+        z-index: 999;
+        transform: translateX(-100%);
+    }
+
+    .admin-sidebar.hidden {
+        transform: translateX(0);
+    }
+}

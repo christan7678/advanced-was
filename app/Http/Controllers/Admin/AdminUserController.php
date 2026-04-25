@@ -192,8 +192,6 @@ class AdminUserController extends Controller
         }
 
         try {
-            $user->bookings()->delete();
-            $user->tickets()->delete();
             $user->delete();
 
             if (request()->ajax() || request()->expectsJson()) {

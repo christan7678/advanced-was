@@ -8,7 +8,10 @@
     <a href="{{ route('admin.events.create', ['category_id' => $category->id]) }}" class="btn-primary">+ Create event</a>
 @endsection
 
+
+
 @section('content')
+<div data-admin-events-base="{{ url('/admin/events') }}"></div>
     @if(session('success'))
         <div class="alert alert-success flash"
             style="background:#d1fae5;color:#065f46;padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;">
@@ -118,7 +121,7 @@
                                 <a href="{{ route('admin.bookings.index') }}?event_id={{ $event->id }}"
                                     class="act-btn">Bookings</a>
                                 <button type="button" class="act-btn act-del"
-                                    onclick="openEventDeleteModal({{ $event->id }}, @json($event->name))">Delete</button>
+                                    onclick='openEventDeleteModal({{ $event->id }}, @json($event->name))'>Delete</button>
                             </div>
                         </td>
                     </tr>

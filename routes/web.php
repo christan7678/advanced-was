@@ -73,6 +73,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/tickets/{ticket}/qr', [TicketController::class, 'showQR'])->name('tickets.qr');
 });
 
+// for admin + super admin
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,super_admin'])->group(function () {
     Route::redirect('/', '/admin/dashboard');
 
@@ -81,6 +82,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,super_ad
     Route::get('/events', [AdminEventController::class, 'folderIndex'])->name('events.index');
     Route::get('/events/category/{category}', [AdminEventController::class, 'categoryEvents'])->name('events.category');
     Route::resource('events', AdminEventController::class)->except(['index']);
+    Route::delete('/events/{event}', [AdminEventController::class, 'destroy'])->name('events.destroy');
+
 
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');

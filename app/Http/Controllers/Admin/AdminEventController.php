@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class AdminEventController extends Controller
 {
+    
     public function __construct()
     {
         $this->middleware(['auth', 'role:admin,super_admin']);
@@ -145,17 +146,23 @@ class AdminEventController extends Controller
     public function destroy(Event $event)
     {
         $categoryId = $event->category_id;
-        $event->delete();
+        try {
+            $event->delete();
 
-        if ($categoryId) {
+            if ($categoryId) {
+                return redirect()
+                    ->route('admin.events.category', $categoryId)
+                    ->with('success', 'Event deleted successfully!');
+            }
+
             return redirect()
-                ->route('admin.events.category', $categoryId)
+                ->route('admin.events.index')
                 ->with('success', 'Event deleted successfully!');
+        }catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Failed to delete event.'
+                ], 500);
         }
-
-        return redirect()
-            ->route('admin.events.index')
-            ->with('success', 'Event deleted successfully!');
     }
 
     private function validatedEventData(Request $request): array
@@ -170,6 +177,7 @@ class AdminEventController extends Controller
             'price' => 'required|numeric|min:0',
             'total_seats' => 'required|integer|min:1',
             'available_seats' => 'required|integer|min:0',
+            'status' => 'required',
             'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|max:2048',
             'organizer' => 'nullable|string|max:255',
@@ -193,6 +201,7 @@ class AdminEventController extends Controller
             'price',
             'total_seats',
             'available_seats',
+            'status',
             'category_id',
             'organizer',
         ]);

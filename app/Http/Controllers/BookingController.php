@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Event;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -55,6 +56,20 @@ class BookingController extends Controller
                 ->get();
         }
 
+        $bookings = Booking::with(['event', 'payment'])
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->get();
+
+        foreach ($bookings as $booking) {
+            $booking->expirePaymentIfNeeded();
+        }
+
+        $bookings = Booking::with(['event', 'payment'])
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->get();
+
         return view('bookings.index', compact('bookings'));
     }
 
@@ -64,20 +79,29 @@ class BookingController extends Controller
     public function show(Booking $booking)
     {
         $this->authorize('view', $booking);
-
-        if (
+        $booking->loadMissing(['event', 'payment']);
+         if (
             $booking->payment_status === 'pending' &&
             $booking->expires_at &&
             $booking->expires_at->lt(now())
         ) {
-            $booking->update([
-                'payment_status' => 'cancelled',
-                'booking_status' => 'cancelled',
-            ]);
+            DB::transaction(function () use ($booking) {
+                $booking->update([
+                    'payment_status' => 'cancelled',
+                    'booking_status' => 'cancelled',
+                    'cancelled_at' => now(),
+                ]);
 
-            if ($booking->event) {
-                $booking->event->increment('available_seats', $booking->number_of_seats);
-            }
+                if ($booking->payment) {
+                    $booking->payment->update([
+                        'status' => 'cancelled',
+                    ]);
+                }
+
+                if ($booking->event) {
+                    $booking->event->increment('available_seats', $booking->number_of_seats);
+                }
+            });
         }
 
         $booking->load(['user', 'event', 'ticket']);
@@ -154,7 +178,19 @@ class BookingController extends Controller
                 'payment_status' => 'pending',
                 'booking_status' => 'pending',
                 'booked_at' => now(),
-                'expires_at' => now()->addMinutes(15),
+                'expires_at' => now()->addMinutes(1),
+            ]);
+
+            Payment::create([
+                'booking_id' => $booking->id,
+                'user_id' => $userId,
+                'payment_code' => 'PAY' . strtoupper(uniqid()),
+                'payment_method' => null,
+                'card_last_four' => null,
+                'card_name' => null,
+                'amount' => $expectedTotal,
+                'status' => 'pending',
+                'paid_at' => null,
             ]);
 
             $event->decrement('available_seats', $numberOfSeats);

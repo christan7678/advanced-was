@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
@@ -41,7 +41,7 @@ class Booking extends Model
         }
 
         return $this->created_at
-            && $this->created_at->copy()->addMinutes(15)->lt(now());
+            && $this->created_at->copy()->addMinutes(1)->lt(now());
     }
 
     public function expirePaymentIfNeeded()
@@ -50,23 +50,31 @@ class Booking extends Model
             return;
         }
 
-        $this->loadMissing('event');
+        $this->loadMissing(['event', 'payment']);
 
-        if ($this->event) {
-            $this->event->increment('available_seats', $this->number_of_seats);
+        DB::transaction(function () {
+            if ($this->event) {
+                $this->event->increment('available_seats', $this->number_of_seats);
 
-            $this->event->refresh();
+                $this->event->refresh();
 
-            if ($this->event->available_seats > 0 && $this->event->date && $this->event->date->gte(today())) {
-                $this->event->status = 'active';
-                $this->event->save();
+                if ($this->event->available_seats > 0 && $this->event->date && $this->event->date->gte(today())) {
+                    $this->event->status = 'active';
+                    $this->event->save();
+                }
             }
-        }
 
-        $this->payment_status = 'cancelled';
-        $this->booking_status = 'cancelled';
-        $this->cancelled_at = now();
-        $this->save();
+            $this->payment_status = 'cancelled';
+            $this->booking_status = 'cancelled';
+            $this->cancelled_at = now();
+            $this->save();
+
+            if ($this->payment) {
+                $this->payment->update([
+                    'status' => 'cancelled',
+                ]);
+            }
+        });
     }
 
 

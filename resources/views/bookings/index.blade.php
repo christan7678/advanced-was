@@ -26,13 +26,18 @@
                 $booking->event &&
                 $booking->event->date &&
                 $booking->event->date->gte(today()) &&
-                !($booking->booking_status === 'cancelled' || in_array($booking->payment_status, ['cancelled', 'refunded']))
+                !($booking->booking_status === 'cancelled' || in_array($booking->payment_status, ['cancelled', 'refunded'])) &&
+                !($booking->payment_status === 'pending' && $booking->expires_at && $booking->expires_at->lte(now()))
             )
             ->sortBy(fn($booking) => $booking->event->date)
             ->values();
 
         $pendingBookings = $upcomingBookings
-            ->filter(fn($booking) => $booking->payment_status === 'pending')
+            ->filter(fn($booking) =>
+                $booking->payment_status === 'pending' &&
+                $booking->expires_at &&
+                $booking->expires_at->gt(now())
+            )
             ->sortBy(fn($booking) => $booking->event->date)
             ->values();
 
@@ -268,3 +273,4 @@
         </section>
     </div>
 @endsection
+

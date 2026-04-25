@@ -12,8 +12,9 @@ class PaymentController extends Controller
     public function show(Booking $booking)
     {
         $this->authorize('view', $booking);
-
+        $booking->loadMissing(['payment', 'event']);
         $booking->expirePaymentIfNeeded();
+        $booking->refresh();
 
         if ($booking->payment_status === 'cancelled') {
             return redirect()->route('bookings.index', ['tab' => 'cancelled'])
@@ -31,8 +32,9 @@ class PaymentController extends Controller
     public function process(Request $request, Booking $booking)
     {
         $this->authorize('pay', $booking);
-
+        $booking->loadMissing(['payment', 'event']);
         $booking->expirePaymentIfNeeded();
+        $booking->refresh();
 
         if ($booking->payment_status === 'cancelled') {
             return redirect()->route('bookings.index', ['tab' => 'cancelled'])
@@ -43,7 +45,7 @@ class PaymentController extends Controller
             return back()->with('error', 'This booking is no longer payable.');
         }
 
-        $request->validate([
+         $request->validate([
             'payment_method' => 'required|in:card,fpx,ewallet',
         ]);
 
@@ -57,15 +59,25 @@ class PaymentController extends Controller
         }
 
         DB::transaction(function () use ($request, $booking) {
-            Payment::create([
-                'booking_id' => $booking->id,
-                'user_id' => auth()->id(),
-                'payment_code' => 'PAY' . strtoupper(uniqid()),
+            $payment = $booking->payment;
+
+            if (!$payment) {
+                $payment = $booking->payment()->create([
+                    'user_id' => $booking->user_id,
+                    'payment_code' => 'PAY' . strtoupper(uniqid()),
+                    'amount' => $booking->total_amount,
+                    'status' => 'pending',
+                ]);
+            }
+
+            $payment->update([
                 'payment_method' => $request->payment_method,
                 'card_last_four' => $request->filled('card_number')
                     ? substr($request->card_number, -4)
                     : null,
-                'card_name' => $request->card_name,
+                'card_name' => $request->payment_method === 'card'
+                    ? $request->card_name
+                    : null,
                 'amount' => $booking->total_amount,
                 'status' => 'completed',
                 'paid_at' => now(),

@@ -18,11 +18,11 @@ class CreatePaymentsTable extends Migration
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('payment_code')->unique();
-            $table->enum('payment_method', ['card', 'fpx', 'ewallet']);
+            $table->enum('payment_method', ['card', 'fpx', 'ewallet'])->nullable();
             $table->string('card_last_four', 4)->nullable();
             $table->string('card_name')->nullable();
             $table->decimal('amount', 10, 2);
-            $table->enum('status', ['pending', 'completed', 'failed', 'cancelled', 'partially_refunded', 'refunded'])->default('pending');
+            $table->enum('status', ['pending', 'completed', 'cancelled', 'refunded'])->default('pending');
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });

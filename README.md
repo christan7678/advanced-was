@@ -5,15 +5,13 @@
 [📹 Demo Video](https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ) · 
 
 
----
-
 ## ScreenShot
 ![Dashboard](screenshots/dashboard.png)
 ![Bookings](screenshots/bookings.png)
 ![Booking Detail](screenshots/booking-detail.png)
 ![Events](screenshots/events.png)
 
----
+
 
 ## 📋 Table of Contents
 
@@ -24,7 +22,6 @@
 - [Demo](#-demo)
 - [Learning Outcomes](#-learning-outcomes)
 
----
 
 
 

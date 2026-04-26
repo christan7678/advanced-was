@@ -24,9 +24,12 @@ class LoginController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
+        // Attempt to log the user in with the provided credentials
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
             $user = Auth::user();
+            
+            // check user role and redirect accordingly
             if ($user->role === 'admin' || $user->role === 'super_admin') {
                 return redirect('/admin/dashboard');
             }

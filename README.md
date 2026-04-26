@@ -2,7 +2,7 @@
 ### A Full-Stack Event Booking System built with Laravel
 > A real-world web application demonstrating relational database design, CRUD operations, cookie & session management, and role-based authentication — all within the Laravel MVC architecture.
 
-[📹 Demo Video](https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ) · 
+[📹 Demo Video](https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ) 
 
 
 
@@ -77,8 +77,6 @@ Cookies are used **only for non-sensitive admin preferences** to persist filter 
 | `per_page` | Remember the preferred pagination size |
 | `sort` | Remember the selected sort order |
 
-> Cookies store UI preferences only — no authentication or personal data is stored in cookies.
-
 ### Sessions
 Sessions are used for secure, server-side state management:
 
@@ -147,8 +145,7 @@ php artisan serve
 
 
 ## Demo
-[Click here to view the demo video and screenshots]
-(https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ?usp=sharing)
+[📹 Demo Video](https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ) 
 
 
 ## Learning Outcomes

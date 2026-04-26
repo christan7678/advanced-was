@@ -31,7 +31,7 @@ This project was developed to demonstrate real-world web development concepts in
 - Filter, search, and sort bookings
 - Cancel/Delete bookings
 
-### Database Table
+### 3. Database Tables
 | # | Table | Description |
 |---|-------|-------------|
 | 1 | `users` | Registered user accounts |
@@ -42,7 +42,7 @@ This project was developed to demonstrate real-world web development concepts in
 | 6 | `tickets` | Generated QR tickets |
 | 7 | `payments` | Payment transaction records |
 
-### Relationships (Eloquent ORM)
+### 4. Relationships (Eloquent ORM)
 ```
 User        → hasMany    → Bookings
 Booking     → belongsTo  → User
@@ -51,7 +51,7 @@ Event       → belongsTo  → Category
 ```
 This relational structure ensures data consistency and enables efficient querying across the system.
 
-### CRUD Operations
+### 5. CRUD Operations
 Full CRUD is implemented across the admin panel:
 | Operation | Example |
 |-----------|---------|
@@ -60,7 +60,7 @@ Full CRUD is implemented across the admin panel:
 | **Update** | Edit event details, user information |
 | **Delete** | Remove bookings or records |
 
-### Authentication & Authorization
+### 6. Authentication & Authorization
 | Feature | Implementation |
 |---------|---------------|
 | Login system | Laravel session-based authentication |
@@ -68,16 +68,16 @@ Full CRUD is implemented across the admin panel:
 | Access control | Admin-only routes and views |
 | Password security | Bcrypt hashing via Laravel |
 
-### Cookies
+### 7. Cookies
 Cookies are used **only for non-sensitive admin preferences** to persist filter state across page visits:
 | Cookie Key | Purpose |
 |------------|---------|
-| `q` | Remember the last search keyword |
-| `status` | Remember the selected booking status filter |
-| `per_page` | Remember the preferred pagination size |
-| `sort` | Remember the selected sort order |
+| `booking_q` | Remember the last search keyword |
+| `booking_status` | Remember the selected booking status filter |
+| `booking_per_page` | Remember pagination size |
+| `booking_sort` | Remember sorting order |
 
-### Sessions
+### 8. Sessions
 Sessions are used for secure, server-side state management:
 
 | Usage | Description |
@@ -88,7 +88,7 @@ Sessions are used for secure, server-side state management:
 
 
 
-## 🔄 Booking Flow
+## Booking Flow
 
 ```
 1. User browses events
@@ -140,11 +140,6 @@ DB_PASSWORD=
 php artisan storage:link
 php artisan serve
 ```
-
-
-
-## Demo
-[📹 Demo Video](https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ) 
 
 
 ## Learning Outcomes

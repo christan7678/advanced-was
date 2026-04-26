@@ -1,14 +1,9 @@
-## About EventBook (Event Booking System)
+## About the Project
 
-EventBook is a full-stack web-based event booking system built with Laravel.
-It supports both users and administrators, allowing event browsing, ticket booking, and full admin management of bookings, users, and events.
+**EventBook** is a full-stack web-based event booking system built with Laravel. It supports both regular users and administrators, enabling event browsing, ticket booking, and complete admin management of bookings, users, and events.
 
-The system demonstrates real-world web development concepts, including:
+This project was developed to demonstrate real-world web development concepts in an academic context, including relational database design, CRUD operations, cookie & session management, and authentication & authorization.
 
-- Relational Database Design
-- CRUD Operations
-- Cookies & Sessions
-- Authentication & Authorization
 
 
 ## Features
@@ -28,71 +23,132 @@ The system demonstrates real-world web development concepts, including:
 - Filter, search, and sort bookings
 - Cancel/Delete bookings
 
-
-## Security Features 
-- Laravel Authentication (session-based)
-- Role-based Authorization (admin, super_admin)
-- CSRF Protection
-- Session Regeneration (prevents session fixation)
-- Password hashing
-
-
-## System Architecture
-MVC Pattern
-1. Model → Database logic  
-2. View → UI (Blade)
-3. Controller → Business logic  
-
-
-## Project Structure
-app/Http/Controllers/Admin/
-resources/views/admin/
-public/css/admin/
-public/js/
-routes/web.php
-
+#### ScreenShot
+![Dashboard](screenshots/dashboard.png)
+![Bookings](screenshots/bookings.png)
+![Booking Detail](screenshots/booking-detail.png)
+![Events](screenshots/events.png)
 
 ## Database Table
-1. users
-2. admins
-3. events
-4. categories
-5. bookings
-6. tickets
-7. payments
+| # | Table | Description |
+|---|-------|-------------|
+| 1 | `users` | Registered user accounts |
+| 2 | `admins` | Administrator accounts |
+| 3 | `events` | Event listings |
+| 4 | `categories` | Event categories |
+| 5 | `bookings` | Ticket booking records |
+| 6 | `tickets` | Generated QR tickets |
+| 7 | `payments` | Payment transaction records |
 
-## Booking Flow
-User selects event
-      ↓
-User books ticket
-      ↓
-Booking saved in database
-      ↓
-Admin manages booking
-      ↓
-Ticket generated (QR)
+### Relationships (Eloquent ORM)
+```
+User        → hasMany    → Bookings
+Booking     → belongsTo  → User
+Booking     → belongsTo  → Event
+Event       → belongsTo  → Category
+```
+
+This relational structure ensures data consistency and enables efficient querying across the system.
+
+---
+
+### CRUD Operations
+Full CRUD is implemented across the admin panel:
+
+| Operation | Example |
+|-----------|---------|
+| **Create** | Add new events, users, bookings |
+| **Read** | View listing pages and detailed records |
+| **Update** | Edit event details, user information |
+| **Delete** | Remove bookings or records |
+
+### Authentication & Authorization
+| Feature | Implementation |
+|---------|---------------|
+| Login system | Laravel session-based authentication |
+| Route protection | Middleware (`auth`, `role`) |
+| Access control | Admin-only routes and views |
+| Password security | Bcrypt hashing via Laravel |
+
+### Cookies
+Cookies are used **only for non-sensitive admin preferences** to persist filter state across page visits:
+
+| Cookie Key | Purpose |
+|------------|---------|
+| `q` | Remember the last search keyword |
+| `status` | Remember the selected booking status filter |
+| `per_page` | Remember the preferred pagination size |
+| `sort` | Remember the selected sort order |
+
+> Cookies store UI preferences only — no authentication or personal data is stored in cookies.
+
+### Sessions
+Sessions are used for secure, server-side state management:
+
+| Usage | Description |
+|-------|-------------|
+| Authentication | Tracks login state across requests |
+| CSRF Protection | Laravel's built-in token validation |
+| Flash Messages | Displays one-time success/error alerts |
+
+
+---
+
+## 🔄 Booking Flow
+
+```
+1. User browses events
+        ↓
+2. User selects an event & books a ticket
+        ↓
+3. Booking record saved to database
+        ↓
+4. Payment is completed
+        ↓
+5. QR ticket generated automatically
+        ↓
+6. Admin monitors and manages all bookings
+```
+
+---
 
 
 ## Installation
 ### 1. Clone Repository
+git clone https://github.com/christan7678/advanced-was.git
+cd advanced-was
+
 ### 2. Install dependencies
+composer install
+npm install
+
 ### 3. Setup environment
+cp .env.example .env
+php artisan key:generate
+
 ### 4. Configure database
+DB_DATABASE=event_booking_db
+DB_USERNAME=root
+DB_PASSWORD=
+
 ### 5. Run server
+php artisan storage:link
+php artisan migrate
+
 
 
 ## Demo Guide
-- **Link: ([https://vehikl.com/](https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ?usp=sharing))**
+- **Link: (https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ?usp=sharing)**
 
 
 ## Learning Outcomes
 This project demonstrates:
-
 - Laravel MVC architecture
 - Secure authentication & authorization
 - CRUD operations with Eloquent ORM
 - Real-world usage of cookies & sessions
 - Admin dashboard UI design
+
 
 
 ## Notes

@@ -44,7 +44,9 @@ class LoginController extends Controller
     {
         Auth::guard('web')->logout();
 
+        // destroy session data
         $request->session()->invalidate();
+        // refresh csrf token
         $request->session()->regenerateToken();
 
         return redirect('/home');

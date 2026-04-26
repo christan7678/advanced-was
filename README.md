@@ -104,7 +104,6 @@ Sessions are used for secure, server-side state management:
 6. Admin monitors and manages all bookings
 ```
 
----
 
 
 ## Installation

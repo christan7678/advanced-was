@@ -288,6 +288,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // =========================
     if (paymentForm) {
         paymentForm.addEventListener('submit', function (e) {
+            
+            if (cardNumber) {
+                cardNumber.value = cardNumber.value.replace(/\s/g, '');
+            }
+
             if (!paymentMethod) return;
 
             if (paymentMethod.value === 'card') {

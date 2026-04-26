@@ -219,6 +219,19 @@ class BookingController extends Controller
             ]);
 
             $event->decrement('available_seats', $numberOfSeats);
+            $event->refresh();
+
+            // If no seats left, update event status to sold_out
+            if ($event->available_seats <= 0) {
+                $event->update([
+                    'available_seats' => 0,
+                    'status' => 'sold_out',
+                ]);
+            } else {
+                $event->update([
+                    'status' => 'active',
+                ]);
+            }
 
             return $booking;
         });

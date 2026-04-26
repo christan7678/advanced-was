@@ -51,7 +51,7 @@ class PaymentController extends Controller
 
         if ($request->payment_method === 'card') {
             $request->validate([
-                'card_number' => ['required', 'digits_between:13,19'],
+                'card_number' => ['required'],
                 'expiry' => ['required'],
                 'cvv' => ['required', 'digits_between:3,4'],
                 'card_name' => ['required', 'string', 'max:255'],

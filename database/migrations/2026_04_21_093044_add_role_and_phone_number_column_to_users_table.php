@@ -19,8 +19,8 @@ class AddRoleAndPhoneNumberColumnToUsersTable extends Migration
             $table->string('phone_number', 15)
                   ->after('password');
 
-            // Role LAST column (no after() needed)
-            $table->enum('role', ['user', 'admin', 'super_admin'])
+            // Role LAST column (no after() er', 'adminneeded)
+            $table->enum('role', ['us', 'super_admin'])
                   ->default('user')
                   ->after("remember_token");
         });

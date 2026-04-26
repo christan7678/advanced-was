@@ -26,15 +26,6 @@ class Event extends Model
         'organizer',
     ];
 
-    protected static function booted()
-    {
-        static::saving(function ($event) {
-            if ($event->available_seats == 0) {
-                $event->status = 'sold_out';
-            }
-        });
-    }
-
     public function bookings()
     {
         return $this->hasMany(Booking::class);
@@ -48,5 +39,14 @@ class Event extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    protected static function booted()
+    {
+        static::saving(function ($event) {
+            if ($event->available_seats == 0) {
+                $event->status = 'sold_out';
+            }
+        });
     }
 }

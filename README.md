@@ -1,3 +1,33 @@
+# 🎟️ EventBook
+### A Full-Stack Event Booking System built with Laravel
+> A real-world web application demonstrating relational database design, CRUD operations, cookie & session management, and role-based authentication — all within the Laravel MVC architecture.
+
+[📹 Demo Video](https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ) · 
+
+
+---
+
+## ScreenShot
+![Dashboard](screenshots/dashboard.png)
+![Bookings](screenshots/bookings.png)
+![Booking Detail](screenshots/booking-detail.png)
+![Events](screenshots/events.png)
+
+---
+
+## 📋 Table of Contents
+
+- [About the Project](#-about-the-project)
+- [Features](#-features)
+- [Booking Flow](#-booking-flow)
+- [Installation](#-installation)
+- [Demo](#-demo)
+- [Learning Outcomes](#-learning-outcomes)
+
+---
+
+
+
 ## About the Project
 
 **EventBook** is a full-stack web-based event booking system built with Laravel. It supports both regular users and administrators, enabling event browsing, ticket booking, and complete admin management of bookings, users, and events.
@@ -23,13 +53,7 @@ This project was developed to demonstrate real-world web development concepts in
 - Filter, search, and sort bookings
 - Cancel/Delete bookings
 
-#### ScreenShot
-![Dashboard](screenshots/dashboard.png)
-![Bookings](screenshots/bookings.png)
-![Booking Detail](screenshots/booking-detail.png)
-![Events](screenshots/events.png)
-
-## Database Table
+### Database Table
 | # | Table | Description |
 |---|-------|-------------|
 | 1 | `users` | Registered user accounts |
@@ -47,14 +71,10 @@ Booking     → belongsTo  → User
 Booking     → belongsTo  → Event
 Event       → belongsTo  → Category
 ```
-
 This relational structure ensures data consistency and enables efficient querying across the system.
-
----
 
 ### CRUD Operations
 Full CRUD is implemented across the admin panel:
-
 | Operation | Example |
 |-----------|---------|
 | **Create** | Add new events, users, bookings |
@@ -72,7 +92,6 @@ Full CRUD is implemented across the admin panel:
 
 ### Cookies
 Cookies are used **only for non-sensitive admin preferences** to persist filter state across page visits:
-
 | Cookie Key | Purpose |
 |------------|---------|
 | `q` | Remember the last search keyword |
@@ -92,7 +111,6 @@ Sessions are used for secure, server-side state management:
 | Flash Messages | Displays one-time success/error alerts |
 
 
----
 
 ## 🔄 Booking Flow
 
@@ -114,44 +132,58 @@ Sessions are used for secure, server-side state management:
 
 
 ## Installation
-### 1. Clone Repository
+**1. Clone the repository**
+```bash
 git clone https://github.com/christan7678/advanced-was.git
 cd advanced-was
+```
 
-### 2. Install dependencies
+**2. Install dependencies**
+```bash
 composer install
-npm install
+npm install && npm run build
+```
 
-### 3. Setup environment
+**3. Set up environment**
+```bash
 cp .env.example .env
 php artisan key:generate
+```
 
-### 4. Configure database
+**4. Configure your database** in `.env`
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
 DB_DATABASE=event_booking_db
 DB_USERNAME=root
 DB_PASSWORD=
+```
 
-### 5. Run server
+**5. Link storage & serve**
+```bash
 php artisan storage:link
-php artisan migrate
+php artisan serve
+```
 
 
 
-## Demo Guide
-- **Link: (https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ?usp=sharing)**
+## Demo
+[Click here to view the demo video and screenshots]
+(https://drive.google.com/drive/folders/1KNWQmZVdx592WBAzi_KjZZn39IWhXuPZ?usp=sharing)
 
 
 ## Learning Outcomes
-This project demonstrates:
-- Laravel MVC architecture
-- Secure authentication & authorization
-- CRUD operations with Eloquent ORM
-- Real-world usage of cookies & sessions
-- Admin dashboard UI design
+This project demonstrates practical application of:
+- **Laravel MVC Architecture** — clean separation of Models, Views, and Controllers
+- **Relational Database Design** — normalized schema with Eloquent relationships
+- **CRUD with Eloquent ORM** — efficient database operations without raw SQL
+- **Authentication & Authorization** — session-based login with middleware-protected routes
+- **Cookies & Sessions** — real-world usage distinguishing non-sensitive preferences (cookies) from secure state (sessions)
+- **Admin Dashboard UI** — role-based interface with filtering, sorting, and pagination
 
 
 
 ## Notes
-- vendor/ folder excluded (as required)
-- Cookies used only for non-sensitive data
-- Sessions handle secure authentication
+- `vendor/` folder is excluded from the repository (run `composer install` to restore)
+
